@@ -1,0 +1,2 @@
+# Git submodule: thêm shared repo bằng lệnh:
+# git submodule add <url-repo-shared> shared
