@@ -3,6 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 
+const activeLink =
+  "bg-primary/10 text-primary font-medium";
+const inactiveLink =
+  "text-muted-foreground hover:bg-muted hover:text-foreground";
+
 const navItems = [
   { href: "/dashboard", label: "Home", icon: HomeIcon },
   {
@@ -48,7 +53,7 @@ export default function DashboardLayout({
                   <Link
                     href={item.href}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
-                      isParentActive ? "bg-primary-muted text-primary font-medium" : "text-muted-foreground hover:bg-muted"
+                      isParentActive ? activeLink : inactiveLink
                     }`}
                   >
                     <item.icon className="w-5 h-5 shrink-0" />
@@ -62,9 +67,7 @@ export default function DashboardLayout({
                           key={sub.href}
                           href={sub.href}
                           className={`px-3 py-2 rounded-lg text-sm transition-colors ${
-                            isSubActive
-                              ? "bg-primary-muted text-primary font-medium"
-                              : "text-muted-foreground hover:bg-muted"
+                            isSubActive ? activeLink : inactiveLink
                           }`}
                         >
                           {sub.label}
@@ -81,9 +84,7 @@ export default function DashboardLayout({
                 key={item.href}
                 href={item.href}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
-                  isActive
-                    ? "bg-primary-muted text-primary font-medium"
-                    : "text-muted-foreground hover:bg-muted"
+                  isActive ? activeLink : inactiveLink
                 }`}
               >
                 <item.icon className="w-5 h-5 shrink-0" />
@@ -92,17 +93,15 @@ export default function DashboardLayout({
             );
           })}
         </nav>
-        {pathname === "/dashboard" && (
-          <div className="px-3 pt-4 mt-auto border-t border-border">
-            <Link
-              href="/login"
-              className="flex items-center gap-3 px-4 py-3 rounded-xl text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-            >
-              <LogoutIcon className="w-5 h-5 shrink-0" />
-              <span>Logout</span>
-            </Link>
-          </div>
-        )}
+        <div className="px-3 pt-4 mt-auto border-t border-border">
+          <Link
+            href="/login"
+            className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${inactiveLink}`}
+          >
+            <LogoutIcon className="w-5 h-5 shrink-0" />
+            <span>Logout</span>
+          </Link>
+        </div>
       </aside>
       <main className="flex-1 rounded-2xl m-4 p-6 bg-background shadow-md overflow-auto">
         {children}
