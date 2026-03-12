@@ -59,9 +59,9 @@ export default function DashboardLayout({
         <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
           <motion.div
             key={pathname}
-            initial={{ opacity: 0, y: 10 }}
+            initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
             className="max-w-7xl mx-auto h-full"
           >
             {children}

@@ -23,7 +23,7 @@ export default function ProfilePage() {
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
         >
           <Card variant="muted" className="h-full">
             <CardHeader>
@@ -62,7 +62,7 @@ export default function ProfilePage() {
                 key={stat.label}
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.3, delay: 0.05 + i * 0.05 }}
+                transition={{ duration: 0.2, delay: 0.05 + i * 0.05, ease: "easeOut" }}
               >
                 <Card className="p-4 flex flex-col justify-center h-full">
                   <p className="text-2xl font-bold text-foreground">{stat.value}</p>
@@ -80,7 +80,7 @@ export default function ProfilePage() {
           className="lg:col-span-2"
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.15 }}
+          transition={{ duration: 0.2, delay: 0.15, ease: "easeOut" }}
         >
           <Card variant="muted" className="h-full">
             <CardHeader>
@@ -95,7 +95,7 @@ export default function ProfilePage() {
         <motion.div
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.2 }}
+          transition={{ duration: 0.2, delay: 0.2, ease: "easeOut" }}
         >
           <Card variant="muted" className="h-full">
             <CardHeader>

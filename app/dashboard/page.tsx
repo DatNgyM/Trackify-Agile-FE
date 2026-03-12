@@ -31,7 +31,7 @@ export default function DashboardPage() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
+          transition={{ duration: 0.2, ease: "easeOut" }}
         >
           <Card className="min-h-[200px] p-5">
             <BarChartPlaceholder />
@@ -40,7 +40,7 @@ export default function DashboardPage() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.05 }}
+          transition={{ duration: 0.2, delay: 0.05, ease: "easeOut" }}
         >
           <Card className="min-h-[200px] p-5">
             <AreaChartPlaceholder />
@@ -49,7 +49,7 @@ export default function DashboardPage() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.1 }}
+          transition={{ duration: 0.2, delay: 0.1, ease: "easeOut" }}
         >
           <Card className="min-h-[200px] flex items-center justify-center p-5">
             <span className="text-5xl font-bold text-foreground">55%</span>
@@ -61,7 +61,7 @@ export default function DashboardPage() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.15 }}
+          transition={{ duration: 0.2, delay: 0.15, ease: "easeOut" }}
         >
           <Card>
             <CardHeader>
@@ -84,7 +84,7 @@ export default function DashboardPage() {
         <motion.div
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3, delay: 0.2 }}
+          transition={{ duration: 0.2, delay: 0.2, ease: "easeOut" }}
         >
           <Card variant="muted">
             <CardHeader>

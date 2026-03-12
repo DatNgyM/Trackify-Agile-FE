@@ -49,7 +49,7 @@ export default function ProjectBoardPage() {
               key={col.key}
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.2, delay: colIndex * 0.05 }}
+              transition={{ duration: 0.2, delay: colIndex * 0.05, ease: "easeOut" }}
             >
               <Card variant="muted" className="flex-shrink-0 w-80 flex flex-col h-full overflow-hidden border-0 bg-muted/80">
                 <div className="px-4 py-3 bg-muted border-b border-border">
@@ -75,7 +75,7 @@ function TaskCard({ task, index }: { task: TaskCard; index: number }) {
     <motion.div
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
-      transition={{ delay: index * 0.03 }}
+      transition={{ duration: 0.2, delay: index * 0.03, ease: "easeOut" }}
     >
       <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer">
         <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${tagClass}`}>

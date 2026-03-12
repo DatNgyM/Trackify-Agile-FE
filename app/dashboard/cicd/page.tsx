@@ -55,7 +55,7 @@ export default function CicdPage() {
             key={m.label}
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: i * 0.05 }}
+            transition={{ duration: 0.2, delay: i * 0.05, ease: "easeOut" }}
           >
             <Card variant="muted" className="p-6">
               <p className="text-sm font-medium text-muted-foreground mb-1">{m.label}</p>
@@ -69,7 +69,7 @@ export default function CicdPage() {
       <motion.div
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.15 }}
+        transition={{ duration: 0.2, delay: 0.15, ease: "easeOut" }}
       >
         <Card variant="muted" className="overflow-hidden">
           <CardHeader className="border-b border-border">
@@ -93,7 +93,7 @@ export default function CicdPage() {
                   className="border-t border-border bg-background/50 hover:bg-background transition-colors"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2 + i * 0.05 }}
+                  transition={{ duration: 0.2, delay: 0.2 + i * 0.05, ease: "easeOut" }}
                 >
                   <td className="px-6 py-4">
                     <div>
