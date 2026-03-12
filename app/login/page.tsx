@@ -4,6 +4,7 @@ import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { Button, Input, Label } from "@/components/ui";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -40,57 +41,42 @@ export default function LoginPage() {
           </motion.h1>
 
           <div className="flex flex-col gap-3">
-            <motion.button
-              type="button"
-              className="w-full flex items-center justify-center gap-2 h-12 rounded-xl border border-border bg-background text-foreground hover:bg-muted transition-colors"
-              variants={fadeInUp}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-            >
-              <UserIcon className="w-5 h-5" />
-            </motion.button>
-            <motion.button
-              type="button"
-              className="w-full flex items-center justify-center gap-2 h-12 rounded-xl border border-border bg-background text-foreground hover:bg-muted transition-colors"
-              variants={fadeInUp}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-            >
-              <GoogleIcon className="w-5 h-5" />
-            </motion.button>
-            <motion.button
-              type="button"
-              className="w-full flex items-center justify-center gap-2 h-12 rounded-xl border border-border bg-background text-foreground hover:bg-muted transition-colors"
-              variants={fadeInUp}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-            >
-              <FacebookIcon className="w-5 h-5" />
-            </motion.button>
+            <motion.div variants={fadeInUp}>
+              <Button variant="outline" className="w-full h-12 rounded-xl gap-2" type="button">
+                <UserIcon className="w-5 h-5" />
+                <span>Tiếp tục với Email</span>
+              </Button>
+            </motion.div>
+            <motion.div variants={fadeInUp}>
+              <Button variant="outline" className="w-full h-12 rounded-xl gap-2" type="button">
+                <GoogleIcon className="w-5 h-5" />
+                <span>Tiếp tục với Google</span>
+              </Button>
+            </motion.div>
+            <motion.div variants={fadeInUp}>
+              <Button variant="outline" className="w-full h-12 rounded-xl gap-2" type="button">
+                <FacebookIcon className="w-5 h-5" />
+                <span>Tiếp tục với Facebook</span>
+              </Button>
+            </motion.div>
           </div>
 
           <motion.div variants={fadeInUp} className="flex flex-col gap-3">
-            <input
-              type="email"
-              placeholder="Email"
-              className="w-full h-12 px-4 rounded-xl border border-border bg-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-            />
-            <input
-              type="password"
-              placeholder="Mật khẩu"
-              className="w-full h-12 px-4 rounded-xl border border-border bg-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-            />
+            <div className="space-y-2">
+              <Label htmlFor="login-email">Email</Label>
+              <Input id="login-email" type="email" placeholder="Email" className="h-12 rounded-xl" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="login-password">Mật khẩu</Label>
+              <Input id="login-password" type="password" placeholder="Mật khẩu" className="h-12 rounded-xl" />
+            </div>
           </motion.div>
 
-          <motion.button
-            type="button"
-            className="w-full h-12 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary-hover transition-colors shadow-sm"
-            variants={fadeInUp}
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.99 }}
-          >
-            Đăng nhập
-          </motion.button>
+          <motion.div variants={fadeInUp}>
+            <Button type="button" className="w-full h-12 rounded-xl shadow-sm">
+              Đăng nhập
+            </Button>
+          </motion.div>
 
           <motion.p
             className="text-xs text-muted-foreground text-center leading-relaxed"

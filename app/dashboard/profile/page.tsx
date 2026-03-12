@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui";
 
 export default function ProfilePage() {
   const [emailNotif, setEmailNotif] = useState(false);
@@ -11,41 +12,46 @@ export default function ProfilePage() {
     <div className="space-y-6">
       {/* Avatar + name */}
       <div className="flex items-center gap-4">
-        <div className="w-20 h-20 rounded-full bg-gray-300 flex items-center justify-center text-2xl font-semibold text-gray-600 shrink-0">
+        <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center text-2xl font-semibold text-muted-foreground shrink-0 border border-border">
           J
         </div>
-        <h1 className="text-2xl font-bold text-gray-900">Jecica</h1>
+        <h1 className="text-2xl font-bold text-foreground">Jecica</h1>
       </div>
 
       {/* Row: Contact info + Overview Stats */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <motion.div
-          className="bg-gray-200/90 rounded-2xl p-6 shadow-sm"
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <h2 className="text-base font-semibold text-gray-900 mb-4">Contact information</h2>
-          <ul className="space-y-3">
-            <li className="flex items-center gap-3 text-gray-700">
-              <EnvelopeIcon className="w-5 h-5 text-gray-500 shrink-0" />
-              <a href="mailto:email@example.com" className="hover:underline">email@example.com</a>
-            </li>
-            <li className="flex items-center gap-3 text-gray-700">
-              <PhoneIcon className="w-5 h-5 text-gray-500 shrink-0" />
-              <span>0909 123 456</span>
-            </li>
-            <li className="flex items-center gap-3 text-gray-700">
-              <GitHubIcon className="w-5 h-5 text-gray-500 shrink-0" />
-              <a href="https://github.com/jecica878" target="_blank" rel="noopener noreferrer" className="hover:underline">
-                github.com/jecica878
-              </a>
-            </li>
-          </ul>
+          <Card variant="muted" className="h-full">
+            <CardHeader>
+              <CardTitle>Contact information</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-3">
+                <li className="flex items-center gap-3 text-foreground">
+                  <EnvelopeIcon className="w-5 h-5 text-muted-foreground shrink-0" />
+                  <a href="mailto:email@example.com" className="hover:underline">email@example.com</a>
+                </li>
+                <li className="flex items-center gap-3 text-foreground">
+                  <PhoneIcon className="w-5 h-5 text-muted-foreground shrink-0" />
+                  <span>0909 123 456</span>
+                </li>
+                <li className="flex items-center gap-3 text-foreground">
+                  <GitHubIcon className="w-5 h-5 text-muted-foreground shrink-0" />
+                  <a href="https://github.com/jecica878" target="_blank" rel="noopener noreferrer" className="hover:underline">
+                    github.com/jecica878
+                  </a>
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
         </motion.div>
 
         <div className="lg:col-span-2">
-          <h2 className="text-base font-semibold text-gray-900 mb-3">Overview Stats</h2>
+          <h2 className="text-base font-semibold text-foreground mb-3 px-1">Overview Stats</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {[
               { label: "Tasks Done", value: "45" },
@@ -54,13 +60,14 @@ export default function ProfilePage() {
             ].map((stat, i) => (
               <motion.div
                 key={stat.label}
-                className="bg-white rounded-xl p-4 shadow-sm border border-gray-100"
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0.05 + i * 0.05 }}
               >
-                <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                <p className="text-sm text-gray-600 mt-0.5">{stat.label}</p>
+                <Card className="p-4 flex flex-col justify-center h-full">
+                  <p className="text-2xl font-bold text-foreground">{stat.value}</p>
+                  <p className="text-sm text-muted-foreground mt-0.5">{stat.label}</p>
+                </Card>
               </motion.div>
             ))}
           </div>
@@ -70,33 +77,44 @@ export default function ProfilePage() {
       {/* Row: Activity Chart + Settings */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <motion.div
-          className="lg:col-span-2 bg-gray-200/90 rounded-2xl p-6 shadow-sm"
+          className="lg:col-span-2"
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.15 }}
         >
-          <h2 className="text-base font-semibold text-gray-900 mb-4">Activity Chart</h2>
-          <ActivityChart />
+          <Card variant="muted" className="h-full">
+            <CardHeader>
+              <CardTitle>Activity Chart</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ActivityChart />
+            </CardContent>
+          </Card>
         </motion.div>
 
         <motion.div
-          className="bg-gray-200/90 rounded-2xl p-6 shadow-sm"
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.2 }}
         >
-          <div className="flex items-center gap-2 mb-4">
-            <GearIcon className="w-5 h-5 text-gray-600" />
-            <h2 className="text-base font-semibold text-gray-900">Settings</h2>
-          </div>
-          <div className="space-y-4">
-            <ToggleRow
-              label="Email Notifications"
-              checked={emailNotif}
-              onChange={setEmailNotif}
-            />
-            <ToggleRow label="Dark Mode" checked={darkMode} onChange={setDarkMode} />
-          </div>
+          <Card variant="muted" className="h-full">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <GearIcon className="w-5 h-5 text-muted-foreground" />
+                <CardTitle>Settings</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <ToggleRow
+                  label="Email Notifications"
+                  checked={emailNotif}
+                  onChange={setEmailNotif}
+                />
+                <ToggleRow label="Dark Mode" checked={darkMode} onChange={setDarkMode} />
+              </div>
+            </CardContent>
+          </Card>
         </motion.div>
       </div>
     </div>
@@ -114,18 +132,18 @@ function ToggleRow({
 }) {
   return (
     <div className="flex items-center justify-between">
-      <span className="text-sm text-gray-700">{label}</span>
+      <span className="text-sm text-foreground">{label}</span>
       <button
         type="button"
         role="switch"
         aria-checked={checked}
         onClick={() => onChange(!checked)}
-        className={`relative w-11 h-6 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-gray-400 focus:ring-offset-2 ${
-          checked ? "bg-blue-600" : "bg-gray-300"
+        className={`relative w-11 h-6 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${
+          checked ? "bg-primary" : "bg-muted-foreground/30"
         }`}
       >
         <span
-          className={`absolute top-1 w-4 h-4 rounded-full bg-white shadow transition-transform ${
+          className={`absolute top-1 w-4 h-4 rounded-full bg-background shadow transition-transform ${
             checked ? "left-[24px]" : "left-1"
           }`}
         />
@@ -151,9 +169,9 @@ function ActivityChart() {
   };
   return (
     <div className="h-[180px]">
-      <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-full text-gray-600" preserveAspectRatio="xMidYMid meet">
-        <path d={toPath(pts1)} fill="#86efac" opacity={0.8} />
-        <path d={toPath(pts2)} fill="#d6d3a8" opacity={0.8} />
+      <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-full text-muted-foreground" preserveAspectRatio="xMidYMid meet">
+        <path d={toPath(pts1)} fill="currentColor" opacity={0.4} />
+        <path d={toPath(pts2)} fill="currentColor" opacity={0.25} />
       </svg>
     </div>
   );
