@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
 
 const navItems = [
   { href: "/dashboard", label: "Home", icon: HomeIcon },
@@ -38,7 +39,12 @@ export default function DashboardLayout({
 
   return (
     <div className="min-h-screen flex bg-gray-100/80">
-      <aside className="w-56 shrink-0 bg-gray-200/90 rounded-2xl m-4 flex flex-col py-6 shadow-sm">
+      <motion.aside 
+        initial={{ x: -100, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{ duration: 0.5, ease: "easeOut" }}
+        className="w-56 shrink-0 bg-gray-200/90 rounded-2xl m-4 flex flex-col py-6 shadow-sm"
+      >
         <nav className="flex flex-col gap-1 px-3 flex-1">
           {navItems.map((item) => {
             const isParentActive = pathname === item.href || (item.children && pathname.startsWith(item.href + "/"));
@@ -103,10 +109,23 @@ export default function DashboardLayout({
             </Link>
           </div>
         )}
-      </aside>
-      <main className="flex-1 rounded-2xl m-4 p-6 bg-gray-300/40 shadow-sm overflow-auto">
-        {children}
-      </main>
+      </motion.aside>
+      <motion.main 
+        initial={{ opacity: 0, scale: 0.98 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ duration: 0.4, delay: 0.1, ease: "easeOut" }}
+        className="flex-1 rounded-2xl m-4 p-6 bg-gray-300/40 shadow-sm overflow-auto"
+      >
+        <motion.div
+          key={pathname}
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.3 }}
+          className="h-full"
+        >
+          {children}
+        </motion.div>
+      </motion.main>
     </div>
   );
 }

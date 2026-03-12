@@ -16,7 +16,12 @@ export default function MyTasksListPage() {
   const [filter, setFilter] = useState<Filter>("All");
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm">
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.3 }}
+      className="bg-white rounded-2xl p-6 shadow-sm"
+    >
       <div className="mb-6">
         <span className="inline-block px-5 py-2 rounded-full bg-gray-200 text-gray-800 font-medium text-sm">
           My task list
@@ -113,7 +118,7 @@ export default function MyTasksListPage() {
           </tbody>
         </table>
       </div>
-    </div>
+    </motion.div>
   );
 }
 
