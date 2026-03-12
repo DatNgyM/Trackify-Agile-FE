@@ -7,7 +7,7 @@ export default function DashboardPage() {
     <>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <motion.div
-          className="bg-background rounded-2xl p-4 shadow-md min-h-[200px]"
+          className="bg-background rounded-2xl p-4 shadow-md min-h-[200px] border border-border"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
@@ -15,7 +15,7 @@ export default function DashboardPage() {
           <BarChartPlaceholder />
         </motion.div>
         <motion.div
-          className="bg-background rounded-2xl p-4 shadow-md min-h-[200px]"
+          className="bg-background rounded-2xl p-4 shadow-md min-h-[200px] border border-border"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.05 }}
@@ -23,7 +23,7 @@ export default function DashboardPage() {
           <AreaChartPlaceholder />
         </motion.div>
         <motion.div
-          className="bg-background rounded-2xl p-4 shadow-md min-h-[200px] flex items-center justify-center"
+          className="bg-background rounded-2xl p-4 shadow-md min-h-[200px] flex items-center justify-center border border-border"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.1 }}
@@ -34,7 +34,7 @@ export default function DashboardPage() {
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <motion.div
-          className="bg-background rounded-2xl p-5 shadow-md min-h-[220px]"
+          className="bg-background rounded-2xl p-5 shadow-md min-h-[220px] border border-border"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.15 }}
@@ -47,7 +47,7 @@ export default function DashboardPage() {
           </div>
         </motion.div>
         <motion.div
-          className="bg-background rounded-2xl p-5 shadow-md min-h-[220px]"
+          className="bg-background rounded-2xl p-5 shadow-md min-h-[220px] border border-border"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.2 }}
