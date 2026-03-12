@@ -37,8 +37,8 @@ export default function DashboardLayout({
   const pathname = usePathname();
 
   return (
-    <div className="min-h-screen flex bg-gray-100/80">
-      <aside className="w-56 shrink-0 bg-gray-200/90 rounded-2xl m-4 flex flex-col py-6 shadow-sm">
+    <div className="min-h-screen flex bg-muted">
+      <aside className="w-56 shrink-0 bg-background rounded-2xl m-4 flex flex-col py-6 shadow-md">
         <nav className="flex flex-col gap-1 px-3 flex-1">
           {navItems.map((item) => {
             const isParentActive = pathname === item.href || (item.children && pathname.startsWith(item.href + "/"));
@@ -48,7 +48,7 @@ export default function DashboardLayout({
                   <Link
                     href={item.href}
                     className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
-                      isParentActive ? "bg-gray-300/80 text-gray-900 font-medium" : "text-gray-600 hover:bg-gray-300/50"
+                      isParentActive ? "bg-primary-muted text-primary font-medium" : "text-muted-foreground hover:bg-muted"
                     }`}
                   >
                     <item.icon className="w-5 h-5 shrink-0" />
@@ -63,8 +63,8 @@ export default function DashboardLayout({
                           href={sub.href}
                           className={`px-3 py-2 rounded-lg text-sm transition-colors ${
                             isSubActive
-                              ? "bg-gray-300/90 text-gray-900 font-medium underline decoration-2 underline-offset-2"
-                              : "text-gray-600 hover:bg-gray-300/50"
+                              ? "bg-primary-muted text-primary font-medium"
+                              : "text-muted-foreground hover:bg-muted"
                           }`}
                         >
                           {sub.label}
@@ -82,8 +82,8 @@ export default function DashboardLayout({
                 href={item.href}
                 className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
                   isActive
-                    ? "bg-gray-300/80 text-gray-900 font-medium underline decoration-2 underline-offset-4"
-                    : "text-gray-600 hover:bg-gray-300/50"
+                    ? "bg-primary-muted text-primary font-medium"
+                    : "text-muted-foreground hover:bg-muted"
                 }`}
               >
                 <item.icon className="w-5 h-5 shrink-0" />
@@ -93,10 +93,10 @@ export default function DashboardLayout({
           })}
         </nav>
         {pathname === "/dashboard" && (
-          <div className="px-3 pt-4 mt-auto border-t border-gray-300/50">
+          <div className="px-3 pt-4 mt-auto border-t border-border">
             <Link
               href="/login"
-              className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-300/50 hover:text-gray-900 transition-colors"
+              className="flex items-center gap-3 px-4 py-3 rounded-xl text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
             >
               <LogoutIcon className="w-5 h-5 shrink-0" />
               <span>Logout</span>
@@ -104,7 +104,7 @@ export default function DashboardLayout({
           </div>
         )}
       </aside>
-      <main className="flex-1 rounded-2xl m-4 p-6 bg-gray-300/40 shadow-sm overflow-auto">
+      <main className="flex-1 rounded-2xl m-4 p-6 bg-background shadow-md overflow-auto">
         {children}
       </main>
     </div>

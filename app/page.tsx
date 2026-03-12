@@ -26,14 +26,14 @@ export default function SignUpPage() {
     <div className="min-h-screen flex">
       {/* Left: Form - Đăng ký */}
       <motion.div
-        className="w-full lg:w-1/2 flex flex-col justify-center items-center bg-white px-8 py-12 lg:px-16"
+        className="w-full lg:w-1/2 flex flex-col justify-center items-center bg-background px-8 py-12 lg:px-16 shadow-lg"
         initial="initial"
         animate="animate"
         variants={stagger}
       >
         <div className="w-full max-w-sm flex flex-col gap-6">
           <motion.h1
-            className="text-3xl font-bold text-black"
+            className="text-3xl font-bold text-foreground"
             variants={fadeInUp}
           >
             Đăng ký tài khoản
@@ -42,7 +42,7 @@ export default function SignUpPage() {
           <div className="flex flex-col gap-3">
             <motion.button
               type="button"
-              className="w-full flex items-center justify-center gap-2 h-12 rounded-xl border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition-colors"
+              className="w-full flex items-center justify-center gap-2 h-12 rounded-xl border border-border bg-background text-foreground hover:bg-muted transition-colors"
               variants={fadeInUp}
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.99 }}
@@ -51,7 +51,7 @@ export default function SignUpPage() {
             </motion.button>
             <motion.button
               type="button"
-              className="w-full flex items-center justify-center gap-2 h-12 rounded-xl border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition-colors"
+              className="w-full flex items-center justify-center gap-2 h-12 rounded-xl border border-border bg-background text-foreground hover:bg-muted transition-colors"
               variants={fadeInUp}
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.99 }}
@@ -60,7 +60,7 @@ export default function SignUpPage() {
             </motion.button>
             <motion.button
               type="button"
-              className="w-full flex items-center justify-center gap-2 h-12 rounded-xl border border-gray-300 bg-white text-gray-700 hover:bg-gray-50 transition-colors"
+              className="w-full flex items-center justify-center gap-2 h-12 rounded-xl border border-border bg-background text-foreground hover:bg-muted transition-colors"
               variants={fadeInUp}
               whileHover={{ scale: 1.01 }}
               whileTap={{ scale: 0.99 }}
@@ -73,28 +73,28 @@ export default function SignUpPage() {
             <input
               type="text"
               placeholder="Họ và tên"
-              className="w-full h-12 px-4 rounded-xl border border-gray-300 bg-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full h-12 px-4 rounded-xl border border-border bg-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             />
             <input
               type="email"
               placeholder="Email"
-              className="w-full h-12 px-4 rounded-xl border border-gray-300 bg-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full h-12 px-4 rounded-xl border border-border bg-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             />
             <input
               type="password"
               placeholder="Mật khẩu"
-              className="w-full h-12 px-4 rounded-xl border border-gray-300 bg-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full h-12 px-4 rounded-xl border border-border bg-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             />
             <input
               type="password"
               placeholder="Xác nhận mật khẩu"
-              className="w-full h-12 px-4 rounded-xl border border-gray-300 bg-white placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full h-12 px-4 rounded-xl border border-border bg-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
             />
           </motion.div>
 
           <motion.button
             type="button"
-            className="w-full h-12 rounded-xl bg-blue-600 text-white font-medium hover:bg-blue-700 transition-colors"
+            className="w-full h-12 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary-hover transition-colors shadow-sm"
             variants={fadeInUp}
             whileHover={{ scale: 1.01 }}
             whileTap={{ scale: 0.99 }}
@@ -103,7 +103,7 @@ export default function SignUpPage() {
           </motion.button>
 
           <motion.p
-            className="text-xs text-gray-500 text-center leading-relaxed"
+            className="text-xs text-muted-foreground text-center leading-relaxed"
             variants={fadeInUp}
           >
             Bằng việc tiếp tục với Google, Facebook, Email bạn đồng ý với Điều
@@ -111,11 +111,11 @@ export default function SignUpPage() {
           </motion.p>
 
           <motion.p
-            className="text-sm text-gray-600 text-center"
+            className="text-sm text-muted-foreground text-center"
             variants={fadeInUp}
           >
             Đã có tài khoản?{" "}
-            <Link href="/login" className="font-bold text-black hover:underline">
+            <Link href="/login" className="font-semibold text-primary hover:underline underline-offset-2">
               Đăng nhập
             </Link>
           </motion.p>
@@ -124,7 +124,7 @@ export default function SignUpPage() {
 
       {/* Right: Laptop image */}
       <motion.div
-        className="hidden lg:flex lg:w-1/2 relative bg-[#0f0f12] items-center justify-center overflow-hidden"
+        className="hidden lg:flex lg:w-1/2 relative bg-foreground items-center justify-center overflow-hidden"
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         transition={{ duration: 0.8, delay: 0.2 }}
@@ -142,7 +142,7 @@ export default function SignUpPage() {
             />
           ) : null}
           <div
-            className="absolute inset-0 bg-gradient-to-br from-slate-900 via-blue-900/20 to-slate-900"
+            className="absolute inset-0 bg-gradient-to-br from-foreground via-foreground/95 to-foreground"
             aria-hidden
           />
         </div>

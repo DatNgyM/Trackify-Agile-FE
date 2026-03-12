@@ -7,7 +7,7 @@ export default function DashboardPage() {
     <>
       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
         <motion.div
-          className="bg-white rounded-2xl p-4 shadow-sm min-h-[200px]"
+          className="bg-background rounded-2xl p-4 shadow-md min-h-[200px]"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
@@ -15,7 +15,7 @@ export default function DashboardPage() {
           <BarChartPlaceholder />
         </motion.div>
         <motion.div
-          className="bg-white rounded-2xl p-4 shadow-sm min-h-[200px]"
+          className="bg-background rounded-2xl p-4 shadow-md min-h-[200px]"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.05 }}
@@ -23,39 +23,39 @@ export default function DashboardPage() {
           <AreaChartPlaceholder />
         </motion.div>
         <motion.div
-          className="bg-white rounded-2xl p-4 shadow-sm min-h-[200px] flex items-center justify-center"
+          className="bg-background rounded-2xl p-4 shadow-md min-h-[200px] flex items-center justify-center"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.1 }}
         >
-          <span className="text-5xl font-bold text-black">55%</span>
+          <span className="text-5xl font-bold text-foreground">55%</span>
         </motion.div>
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
         <motion.div
-          className="bg-white rounded-2xl p-5 shadow-sm min-h-[220px]"
+          className="bg-background rounded-2xl p-5 shadow-md min-h-[220px]"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.15 }}
         >
-          <h2 className="text-base font-semibold text-gray-900 mb-4">
+          <h2 className="text-base font-semibold text-foreground mb-4">
             Follow meeting
           </h2>
-          <div className="text-gray-400 text-sm">
+          <div className="text-muted-foreground text-sm">
             Nội dung meeting sẽ hiển thị tại đây.
           </div>
         </motion.div>
         <motion.div
-          className="bg-white rounded-2xl p-5 shadow-sm min-h-[220px]"
+          className="bg-background rounded-2xl p-5 shadow-md min-h-[220px]"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.2 }}
         >
-          <h2 className="text-base font-semibold text-gray-900 mb-4">
+          <h2 className="text-base font-semibold text-foreground mb-4">
             Ongoing project
           </h2>
-          <div className="text-gray-400 text-sm">
+          <div className="text-muted-foreground text-sm">
             Các dự án đang thực hiện sẽ hiển thị tại đây.
           </div>
         </motion.div>
@@ -72,7 +72,7 @@ function BarChartPlaceholder() {
       {values.map((v, i) => (
         <div key={i} className="flex-1 flex flex-col items-center justify-end">
           <div
-            className="w-full rounded-t bg-gray-600 min-h-[6px]"
+            className="w-full rounded-t bg-foreground/80 min-h-[6px]"
             style={{ height: `${(v / max) * 100}%`, maxHeight: 120 }}
           />
         </div>
@@ -95,7 +95,7 @@ function AreaChartPlaceholder() {
   const areaD = `${pathD} L ${xs[xs.length - 1]} ${h - pad} L ${xs[0]} ${h - pad} Z`;
   return (
     <div className="h-[140px] flex items-center">
-      <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-full text-gray-600" preserveAspectRatio="xMidYMid meet">
+      <svg viewBox={`0 0 ${w} ${h}`} className="w-full h-full text-muted-foreground" preserveAspectRatio="xMidYMid meet">
         <path d={areaD} fill="currentColor" opacity={0.3} />
         <path d={pathD} fill="none" stroke="currentColor" strokeWidth={1.2} strokeLinecap="round" strokeLinejoin="round" />
         {points.map((_, i) => (
