@@ -1,13 +1,13 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { motion } from "framer-motion";
+import { Header, Sidebar } from "@/components/layout";
 
 const navItems = [
   { href: "/dashboard", label: "Home", icon: HomeIcon },
   {
-    href: "/dashboard/projects",
+    href: "/dashboard/projects/board",
     label: "Project",
     icon: ProjectIcon,
     children: [
@@ -36,96 +36,38 @@ export default function DashboardLayout({
   children: React.ReactNode;
 }) {
   const pathname = usePathname();
+  
+  // Lấy tên trang hiện tại từ pathname để hiển thị trên Header
+  const getPageTitle = () => {
+    if (pathname === "/dashboard") return "Home";
+    const segments = pathname.split("/").filter(Boolean);
+    if (segments.length > 1) {
+      // Ví dụ: /dashboard/projects/board -> "projects"
+      const title = segments[1];
+      // Nếu là cicd thì viết hoa đặc biệt, còn lại viết hoa chữ cái đầu (đã có capitalize ở Header)
+      if (title === "cicd") return "CI/CD";
+      return title;
+    }
+    return "Dashboard";
+  };
 
   return (
-    <div className="min-h-screen flex bg-gray-100/80">
-      <motion.aside 
-        initial={{ x: -100, opacity: 0 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ duration: 0.5, ease: "easeOut" }}
-        className="w-56 shrink-0 bg-gray-200/90 rounded-2xl m-4 flex flex-col py-6 shadow-sm"
-      >
-        <nav className="flex flex-col gap-1 px-3 flex-1">
-          {navItems.map((item) => {
-            const isParentActive = pathname === item.href || (item.children && pathname.startsWith(item.href + "/"));
-            if (item.children) {
-              return (
-                <div key={item.href}>
-                  <Link
-                    href={item.href}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
-                      isParentActive ? "bg-gray-300/80 text-gray-900 font-medium" : "text-gray-600 hover:bg-gray-300/50"
-                    }`}
-                  >
-                    <item.icon className="w-5 h-5 shrink-0" />
-                    <span>{item.label}</span>
-                  </Link>
-                  <div className="ml-6 mt-0.5 flex flex-col gap-0.5">
-                    {item.children.map((sub) => {
-                      const isSubActive = pathname === sub.href;
-                      return (
-                        <Link
-                          key={sub.href}
-                          href={sub.href}
-                          className={`px-3 py-2 rounded-lg text-sm transition-colors ${
-                            isSubActive
-                              ? "bg-gray-300/90 text-gray-900 font-medium underline decoration-2 underline-offset-2"
-                              : "text-gray-600 hover:bg-gray-300/50"
-                          }`}
-                        >
-                          {sub.label}
-                        </Link>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            }
-            const isActive = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
-                  isActive
-                    ? "bg-gray-300/80 text-gray-900 font-medium underline decoration-2 underline-offset-4"
-                    : "text-gray-600 hover:bg-gray-300/50"
-                }`}
-              >
-                <item.icon className="w-5 h-5 shrink-0" />
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
-        </nav>
-        {pathname === "/dashboard" && (
-          <div className="px-3 pt-4 mt-auto border-t border-gray-300/50">
-            <Link
-              href="/login"
-              className="flex items-center gap-3 px-4 py-3 rounded-xl text-gray-600 hover:bg-gray-300/50 hover:text-gray-900 transition-colors"
-            >
-              <LogoutIcon className="w-5 h-5 shrink-0" />
-              <span>Logout</span>
-            </Link>
-          </div>
-        )}
-      </motion.aside>
-      <motion.main 
-        initial={{ opacity: 0, scale: 0.98 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.4, delay: 0.1, ease: "easeOut" }}
-        className="flex-1 rounded-2xl m-4 p-6 bg-gray-300/40 shadow-sm overflow-auto"
-      >
-        <motion.div
-          key={pathname}
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.3 }}
-          className="h-full"
-        >
-          {children}
-        </motion.div>
-      </motion.main>
+    <div className="h-screen flex overflow-hidden bg-muted/30">
+      <Sidebar items={navItems} />
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <Header title={getPageTitle()} />
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8">
+          <motion.div
+            key={pathname}
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+            className="max-w-7xl mx-auto h-full"
+          >
+            {children}
+          </motion.div>
+        </main>
+      </div>
     </div>
   );
 }
@@ -166,14 +108,6 @@ function UserIcon({ className }: { className?: string }) {
   return (
     <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
       <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 6a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0zM4.501 20.118a7.5 7.5 0 0114.998 0A17.933 17.933 0 0112 21.75c-2.676 0-5.216-.584-7.499-1.632z" />
-    </svg>
-  );
-}
-
-function LogoutIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v3.75M15.75 9L12 12.75m0 0L8.25 9m3.75 3.75V21" />
     </svg>
   );
 }

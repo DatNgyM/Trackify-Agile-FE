@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Card } from "@/components/ui";
 
 export default function CreateNewTaskPage() {
   return (
@@ -8,10 +9,11 @@ export default function CreateNewTaskPage() {
       initial={{ opacity: 0, y: 10 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className="bg-white rounded-2xl p-6 shadow-sm"
     >
-      <h1 className="text-xl font-semibold text-gray-900 mb-4">Create New Tasks</h1>
-      <p className="text-gray-500 text-sm">Form tạo task mới — nội dung sẽ bổ sung.</p>
+      <Card className="p-6">
+        <h1 className="text-xl font-semibold text-foreground mb-4">Create New Tasks</h1>
+        <p className="text-muted-foreground text-sm">Form tạo task mới — nội dung sẽ bổ sung.</p>
+      </Card>
     </motion.div>
   );
 }

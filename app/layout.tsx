@@ -13,7 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="vi">
-      <body className="antialiased min-h-screen">{children}</body>
+      <body className="min-h-screen bg-background-subtle text-foreground font-sans antialiased">{children}</body>
     </html>
   );
 }
