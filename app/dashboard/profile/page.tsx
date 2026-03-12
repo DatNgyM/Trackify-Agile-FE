@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui";
 
 export default function ProfilePage() {
   const [emailNotif, setEmailNotif] = useState(false);
@@ -11,7 +12,7 @@ export default function ProfilePage() {
     <div className="space-y-6">
       {/* Avatar + name */}
       <div className="flex items-center gap-4">
-        <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center text-2xl font-semibold text-muted-foreground shrink-0">
+        <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center text-2xl font-semibold text-muted-foreground shrink-0 border border-border">
           J
         </div>
         <h1 className="text-2xl font-bold text-foreground">Jecica</h1>
@@ -20,32 +21,37 @@ export default function ProfilePage() {
       {/* Row: Contact info + Overview Stats */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <motion.div
-          className="bg-muted rounded-2xl p-6 shadow-sm border border-border"
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <h2 className="text-base font-semibold text-foreground mb-4">Contact information</h2>
-          <ul className="space-y-3">
-            <li className="flex items-center gap-3 text-foreground">
-              <EnvelopeIcon className="w-5 h-5 text-muted-foreground shrink-0" />
-              <a href="mailto:email@example.com" className="hover:underline">email@example.com</a>
-            </li>
-            <li className="flex items-center gap-3 text-foreground">
-              <PhoneIcon className="w-5 h-5 text-muted-foreground shrink-0" />
-              <span>0909 123 456</span>
-            </li>
-            <li className="flex items-center gap-3 text-foreground">
-              <GitHubIcon className="w-5 h-5 text-muted-foreground shrink-0" />
-              <a href="https://github.com/jecica878" target="_blank" rel="noopener noreferrer" className="hover:underline">
-                github.com/jecica878
-              </a>
-            </li>
-          </ul>
+          <Card variant="muted" className="h-full">
+            <CardHeader>
+              <CardTitle>Contact information</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ul className="space-y-3">
+                <li className="flex items-center gap-3 text-foreground">
+                  <EnvelopeIcon className="w-5 h-5 text-muted-foreground shrink-0" />
+                  <a href="mailto:email@example.com" className="hover:underline">email@example.com</a>
+                </li>
+                <li className="flex items-center gap-3 text-foreground">
+                  <PhoneIcon className="w-5 h-5 text-muted-foreground shrink-0" />
+                  <span>0909 123 456</span>
+                </li>
+                <li className="flex items-center gap-3 text-foreground">
+                  <GitHubIcon className="w-5 h-5 text-muted-foreground shrink-0" />
+                  <a href="https://github.com/jecica878" target="_blank" rel="noopener noreferrer" className="hover:underline">
+                    github.com/jecica878
+                  </a>
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
         </motion.div>
 
         <div className="lg:col-span-2">
-          <h2 className="text-base font-semibold text-foreground mb-3">Overview Stats</h2>
+          <h2 className="text-base font-semibold text-foreground mb-3 px-1">Overview Stats</h2>
           <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
             {[
               { label: "Tasks Done", value: "45" },
@@ -54,13 +60,14 @@ export default function ProfilePage() {
             ].map((stat, i) => (
               <motion.div
                 key={stat.label}
-                className="bg-background rounded-xl p-4 shadow-sm border border-border"
                 initial={{ opacity: 0, y: 8 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ duration: 0.3, delay: 0.05 + i * 0.05 }}
               >
-                <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-                <p className="text-sm text-muted-foreground mt-0.5">{stat.label}</p>
+                <Card className="p-4 flex flex-col justify-center h-full">
+                  <p className="text-2xl font-bold text-foreground">{stat.value}</p>
+                  <p className="text-sm text-muted-foreground mt-0.5">{stat.label}</p>
+                </Card>
               </motion.div>
             ))}
           </div>
@@ -70,33 +77,44 @@ export default function ProfilePage() {
       {/* Row: Activity Chart + Settings */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-4">
         <motion.div
-          className="lg:col-span-2 bg-muted rounded-2xl p-6 shadow-sm border border-border"
+          className="lg:col-span-2"
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.15 }}
         >
-          <h2 className="text-base font-semibold text-foreground mb-4">Activity Chart</h2>
-          <ActivityChart />
+          <Card variant="muted" className="h-full">
+            <CardHeader>
+              <CardTitle>Activity Chart</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <ActivityChart />
+            </CardContent>
+          </Card>
         </motion.div>
 
         <motion.div
-          className="bg-muted rounded-2xl p-6 shadow-sm border border-border"
           initial={{ opacity: 0, y: 8 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.2 }}
         >
-          <div className="flex items-center gap-2 mb-4">
-            <GearIcon className="w-5 h-5 text-muted-foreground" />
-            <h2 className="text-base font-semibold text-foreground">Settings</h2>
-          </div>
-          <div className="space-y-4">
-            <ToggleRow
-              label="Email Notifications"
-              checked={emailNotif}
-              onChange={setEmailNotif}
-            />
-            <ToggleRow label="Dark Mode" checked={darkMode} onChange={setDarkMode} />
-          </div>
+          <Card variant="muted" className="h-full">
+            <CardHeader>
+              <div className="flex items-center gap-2">
+                <GearIcon className="w-5 h-5 text-muted-foreground" />
+                <CardTitle>Settings</CardTitle>
+              </div>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <ToggleRow
+                  label="Email Notifications"
+                  checked={emailNotif}
+                  onChange={setEmailNotif}
+                />
+                <ToggleRow label="Dark Mode" checked={darkMode} onChange={setDarkMode} />
+              </div>
+            </CardContent>
+          </Card>
         </motion.div>
       </div>
     </div>

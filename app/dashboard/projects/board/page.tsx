@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Card } from "@/components/ui";
 
 type TaskType = "Bug" | "Feature";
 type Status = "todo" | "in_process" | "done";
@@ -39,31 +40,32 @@ const typeStyles: Record<TaskType, string> = {
 
 export default function ProjectBoardPage() {
   return (
-    <div className="bg-background rounded-2xl p-6 shadow-sm min-h-[500px] border border-border">
+    <Card className="min-h-[500px] p-6">
       <div className="flex gap-4 overflow-x-auto pb-2">
         {columns.map((col, colIndex) => {
           const tasks = mockTasks.filter((t) => t.status === col.key);
           return (
             <motion.div
               key={col.key}
-              className="flex-shrink-0 w-80 flex flex-col rounded-xl bg-muted/80 overflow-hidden"
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2, delay: colIndex * 0.05 }}
             >
-              <div className="px-4 py-3 bg-muted rounded-t-xl border-b border-border">
-                <h2 className="text-sm font-semibold text-foreground">{col.label}</h2>
-              </div>
-              <div className="flex-1 p-3 flex flex-col gap-3 overflow-y-auto min-h-[200px]">
-                {tasks.map((task, i) => (
-                  <TaskCard key={task.id} task={task} index={i} />
-                ))}
-              </div>
+              <Card variant="muted" className="flex-shrink-0 w-80 flex flex-col h-full overflow-hidden border-0 bg-muted/80">
+                <div className="px-4 py-3 bg-muted border-b border-border">
+                  <h2 className="text-sm font-semibold text-foreground">{col.label}</h2>
+                </div>
+                <div className="flex-1 p-3 flex flex-col gap-3 overflow-y-auto min-h-[200px]">
+                  {tasks.map((task, i) => (
+                    <TaskCard key={task.id} task={task} index={i} />
+                  ))}
+                </div>
+              </Card>
             </motion.div>
           );
         })}
       </div>
-    </div>
+    </Card>
   );
 }
 
@@ -71,25 +73,26 @@ function TaskCard({ task, index }: { task: TaskCard; index: number }) {
   const tagClass = task.status === "done" ? "bg-primary/15 text-primary" : typeStyles[task.type];
   return (
     <motion.div
-      className="bg-background rounded-xl p-4 shadow-sm border border-border hover:shadow-md transition-shadow"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ delay: index * 0.03 }}
     >
-      <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${tagClass}`}>
-        <BugIcon className="w-3.5 h-3.5" />
-        {task.type}
-      </span>
-      <p className="mt-2 text-sm text-foreground leading-snug">{task.title}</p>
-      <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
-        <div className="flex items-center gap-2">
-          <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-foreground font-medium">
-            ?
+      <Card className="p-4 hover:shadow-md transition-shadow cursor-pointer">
+        <span className={`inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-medium ${tagClass}`}>
+          <BugIcon className="w-3.5 h-3.5" />
+          {task.type}
+        </span>
+        <p className="mt-2 text-sm text-foreground leading-snug">{task.title}</p>
+        <div className="mt-3 flex items-center justify-between text-xs text-muted-foreground">
+          <div className="flex items-center gap-2">
+            <div className="w-6 h-6 rounded-full bg-muted flex items-center justify-center text-foreground font-medium">
+              ?
+            </div>
+            <span>{task.date}</span>
           </div>
-          <span>{task.date}</span>
+          <span>{task.progress}</span>
         </div>
-        <span>{task.progress}</span>
-      </div>
+      </Card>
     </motion.div>
   );
 }

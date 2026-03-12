@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui";
 
 const metrics = [
   { label: "Total Builds", value: "156" },
@@ -52,29 +53,30 @@ export default function CicdPage() {
         {metrics.map((m, i) => (
           <motion.div
             key={m.label}
-            className="bg-muted rounded-2xl p-6 shadow-sm border border-border"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.3, delay: i * 0.05 }}
           >
-            <p className="text-sm font-medium text-muted-foreground mb-1">{m.label}</p>
-            <p className="text-3xl font-bold text-foreground">{m.value}</p>
+            <Card variant="muted" className="p-6">
+              <p className="text-sm font-medium text-muted-foreground mb-1">{m.label}</p>
+              <p className="text-3xl font-bold text-foreground">{m.value}</p>
+            </Card>
           </motion.div>
         ))}
       </div>
 
       {/* Recent build activities */}
       <motion.div
-        className="bg-muted rounded-2xl overflow-hidden shadow-sm border border-border"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.3, delay: 0.15 }}
       >
-        <div className="px-6 py-4 border-b border-border">
-          <h2 className="text-base font-semibold text-foreground">Recent Build Activities</h2>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[700px]">
+        <Card variant="muted" className="overflow-hidden">
+          <CardHeader className="border-b border-border">
+            <CardTitle>Recent Build Activities</CardTitle>
+          </CardHeader>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[700px]">
             <thead>
               <tr className="bg-muted text-left text-sm font-semibold text-foreground">
                 <th className="px-6 py-3">Build / Commit</th>
@@ -121,7 +123,8 @@ export default function CicdPage() {
               ))}
             </tbody>
           </table>
-        </div>
+          </div>
+        </Card>
       </motion.div>
     </div>
   );

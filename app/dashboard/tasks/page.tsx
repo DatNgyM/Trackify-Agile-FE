@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { motion } from "framer-motion";
-import { Button, Input } from "@/components/ui";
+import { Button, Input, Card } from "@/components/ui";
 
 const mockTasks = [
   { id: "TSK-01", name: "Fix login bug", project: "E-commerce App", priority: "2m 15s", deadline: "Jan 25, 2026", status: "In Progress" },
@@ -17,7 +17,7 @@ export default function MyTasksListPage() {
   const [filter, setFilter] = useState<Filter>("All");
 
   return (
-    <div className="bg-background rounded-2xl p-6 shadow-sm border border-border">
+    <Card className="p-6">
       <div className="mb-6">
         <span className="inline-block px-5 py-2 rounded-full bg-muted text-foreground font-medium text-sm">
           My task list
@@ -118,7 +118,7 @@ export default function MyTasksListPage() {
           </tbody>
         </table>
       </div>
-    </div>
+    </Card>
   );
 }
 

@@ -1,65 +1,130 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
+import {
+  Card,
+  CardHeader,
+  CardTitle,
+  CardContent,
+  CardFooter,
+  Button,
+  Modal,
+  Input,
+  Label,
+} from "@/components/ui";
 
 export default function DashboardPage() {
+  const [noteModalOpen, setNoteModalOpen] = useState(false);
+  const [meetingNote, setMeetingNote] = useState("");
+  const [savedNote, setSavedNote] = useState<string | null>(null);
+
+  const handleSaveNote = () => {
+    if (meetingNote.trim()) setSavedNote(meetingNote.trim());
+    setMeetingNote("");
+    setNoteModalOpen(false);
+  };
+
   return (
     <>
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 mb-5">
         <motion.div
-          className="bg-background rounded-2xl p-4 shadow-md min-h-[200px] border border-border"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3 }}
         >
-          <BarChartPlaceholder />
+          <Card className="min-h-[200px] p-5">
+            <BarChartPlaceholder />
+          </Card>
         </motion.div>
         <motion.div
-          className="bg-background rounded-2xl p-4 shadow-md min-h-[200px] border border-border"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.05 }}
         >
-          <AreaChartPlaceholder />
+          <Card className="min-h-[200px] p-5">
+            <AreaChartPlaceholder />
+          </Card>
         </motion.div>
         <motion.div
-          className="bg-background rounded-2xl p-4 shadow-md min-h-[200px] flex items-center justify-center border border-border"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.1 }}
         >
-          <span className="text-5xl font-bold text-foreground">55%</span>
+          <Card className="min-h-[200px] flex items-center justify-center p-5">
+            <span className="text-5xl font-bold text-foreground">55%</span>
+          </Card>
         </motion.div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
         <motion.div
-          className="bg-background rounded-2xl p-5 shadow-md min-h-[220px] border border-border"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.15 }}
         >
-          <h2 className="text-base font-semibold text-foreground mb-4">
-            Follow meeting
-          </h2>
-          <div className="text-muted-foreground text-sm">
-            Nội dung meeting sẽ hiển thị tại đây.
-          </div>
+          <Card>
+            <CardHeader>
+              <CardTitle>Follow meeting</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {savedNote ? (
+                <p className="text-foreground">{savedNote}</p>
+              ) : (
+                <p>Nội dung meeting sẽ hiển thị tại đây.</p>
+              )}
+            </CardContent>
+            <CardFooter>
+              <Button onClick={() => setNoteModalOpen(true)}>
+                Thêm ghi chú
+              </Button>
+            </CardFooter>
+          </Card>
         </motion.div>
         <motion.div
-          className="bg-background rounded-2xl p-5 shadow-md min-h-[220px] border border-border"
           initial={{ opacity: 0, y: 10 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.3, delay: 0.2 }}
         >
-          <h2 className="text-base font-semibold text-foreground mb-4">
-            Ongoing project
-          </h2>
-          <div className="text-muted-foreground text-sm">
-            Các dự án đang thực hiện sẽ hiển thị tại đây.
-          </div>
+          <Card variant="muted">
+            <CardHeader>
+              <CardTitle>Ongoing project</CardTitle>
+            </CardHeader>
+            <CardContent>
+              Các dự án đang thực hiện sẽ hiển thị tại đây.
+            </CardContent>
+          </Card>
         </motion.div>
       </div>
+
+      <Modal
+        open={noteModalOpen}
+        onOpenChange={setNoteModalOpen}
+        title="Thêm ghi chú meeting"
+        footer={
+          <>
+            <Button variant="outline" onClick={() => setNoteModalOpen(false)}>
+              Hủy
+            </Button>
+            <Button onClick={handleSaveNote} disabled={!meetingNote.trim()}>
+              Lưu
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-4">
+          <div>
+            <Label htmlFor="meeting-note">Ghi chú</Label>
+            <Input
+              id="meeting-note"
+              placeholder="Nhập nội dung ghi chú..."
+              value={meetingNote}
+              onChange={(e) => setMeetingNote(e.target.value)}
+              className="mt-2"
+            />
+          </div>
+        </div>
+      </Modal>
     </>
   );
 }
