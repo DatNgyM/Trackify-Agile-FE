@@ -8,10 +8,11 @@ export interface DropdownProps {
   trigger: React.ReactNode;
   children: React.ReactNode;
   className?: string;
+  contentClassName?: string;
   align?: "left" | "right";
 }
 
-function Dropdown({ trigger, children, className = "", align = "left" }: DropdownProps) {
+function Dropdown({ trigger, children, className = "", contentClassName = "", align = "left" }: DropdownProps) {
   const [open, setOpen] = React.useState(false);
   const containerRef = React.useRef<HTMLDivElement>(null);
 
@@ -37,8 +38,9 @@ function Dropdown({ trigger, children, className = "", align = "left" }: Dropdow
         {open && (
           <div
             className={`
-              absolute z-50 mt-2 min-w-[10rem] rounded-xl border border-border bg-background py-1 shadow-xl overflow-hidden
+              absolute z-50 mt-2 min-w-[10rem] rounded-xl border border-border bg-background py-2 shadow-xl overflow-hidden
               ${align === "right" ? "right-0" : "left-0"}
+              ${contentClassName}
             `.replace(/\s+/g, " ")}
             role="menu"
           >
@@ -66,7 +68,7 @@ function DropdownItem({ children, className = "", onClick, ...props }: DropdownI
     <div
       role="menuitem"
       className={`
-        cursor-pointer px-3 py-2 text-sm text-foreground hover:bg-muted transition-colors mx-1 rounded-lg my-1
+        cursor-pointer text-sm text-foreground transition-colors
         ${className}
       `.replace(/\s+/g, " ")}
       onClick={handleClick}
