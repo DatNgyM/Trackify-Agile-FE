@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui";
 
 const metrics = [
   { label: "Total Builds", value: "156" },
@@ -39,8 +40,8 @@ const recentBuilds = [
 ];
 
 const statusStyles = {
-  Success: "bg-green-100 text-green-800",
-  Failed: "bg-red-100 text-red-800",
+  Success: "bg-primary/15 text-primary",
+  Failed: "bg-destructive/15 text-destructive",
   "In Progress": "bg-amber-100 text-amber-800",
 };
 
@@ -52,31 +53,32 @@ export default function CicdPage() {
         {metrics.map((m, i) => (
           <motion.div
             key={m.label}
-            className="bg-gray-200/90 rounded-2xl p-6 shadow-sm"
             initial={{ opacity: 0, y: 10 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.3, delay: i * 0.05 }}
+            transition={{ duration: 0.2, delay: i * 0.05, ease: "easeOut" }}
           >
-            <p className="text-sm font-medium text-gray-600 mb-1">{m.label}</p>
-            <p className="text-3xl font-bold text-gray-900">{m.value}</p>
+            <Card variant="muted" className="p-6">
+              <p className="text-sm font-medium text-muted-foreground mb-1">{m.label}</p>
+              <p className="text-3xl font-bold text-foreground">{m.value}</p>
+            </Card>
           </motion.div>
         ))}
       </div>
 
       {/* Recent build activities */}
       <motion.div
-        className="bg-gray-200/90 rounded-2xl overflow-hidden shadow-sm"
         initial={{ opacity: 0, y: 10 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.3, delay: 0.15 }}
+        transition={{ duration: 0.2, delay: 0.15, ease: "easeOut" }}
       >
-        <div className="px-6 py-4 border-b border-gray-300/50">
-          <h2 className="text-base font-semibold text-gray-900">Recent Build Activities</h2>
-        </div>
-        <div className="overflow-x-auto">
-          <table className="w-full min-w-[700px]">
+        <Card variant="muted" className="overflow-hidden">
+          <CardHeader className="border-b border-border">
+            <CardTitle>Recent Build Activities</CardTitle>
+          </CardHeader>
+          <div className="overflow-x-auto">
+            <table className="w-full min-w-[700px]">
             <thead>
-              <tr className="bg-gray-300/50 text-left text-sm font-semibold text-gray-700">
+              <tr className="bg-muted text-left text-sm font-semibold text-foreground">
                 <th className="px-6 py-3">Build / Commit</th>
                 <th className="px-6 py-3">Branch</th>
                 <th className="px-6 py-3">Duration</th>
@@ -88,28 +90,28 @@ export default function CicdPage() {
               {recentBuilds.map((build, i) => (
                 <motion.tr
                   key={build.id}
-                  className="border-t border-gray-300/50 bg-white/50 hover:bg-white/70 transition-colors"
+                  className="border-t border-border bg-background/50 hover:bg-background transition-colors"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  transition={{ delay: 0.2 + i * 0.05 }}
+                  transition={{ duration: 0.2, delay: 0.2 + i * 0.05, ease: "easeOut" }}
                 >
                   <td className="px-6 py-4">
                     <div>
-                      <p className="font-medium text-gray-900">
+                      <p className="font-medium text-foreground">
                         Build #{build.id}: {build.title}
                       </p>
                       {build.commit && (
-                        <p className="text-xs text-gray-500">#{build.commit}</p>
+                        <p className="text-xs text-muted-foreground">#{build.commit}</p>
                       )}
                     </div>
                   </td>
-                  <td className="px-6 py-4 text-gray-700">{build.branch}</td>
+                  <td className="px-6 py-4 text-foreground">{build.branch}</td>
                   <td className="px-6 py-4">
-                    <span className="inline-block px-3 py-1 rounded-full bg-gray-200 text-gray-700 text-sm">
+                    <span className="inline-block px-3 py-1 rounded-full bg-muted text-foreground text-sm">
                       {build.duration}
                     </span>
                   </td>
-                  <td className="px-6 py-4 text-gray-700">{build.time}</td>
+                  <td className="px-6 py-4 text-foreground">{build.time}</td>
                   <td className="px-6 py-4">
                     <span
                       className={`inline-block px-3 py-1 rounded-full text-sm font-medium ${statusStyles[build.status]}`}
@@ -121,7 +123,8 @@ export default function CicdPage() {
               ))}
             </tbody>
           </table>
-        </div>
+          </div>
+        </Card>
       </motion.div>
     </div>
   );

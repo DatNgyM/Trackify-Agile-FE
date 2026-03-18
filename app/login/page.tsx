@@ -2,8 +2,14 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import Image from "next/image";
+import { Button, Input, Label } from "@/components/ui";
+import { loginSchema, type LoginInput } from "@/validations/auth";
+import { authApi } from "@/lib/api";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -22,9 +28,41 @@ const stagger = {
 
 export default function LoginPage() {
   const [imgError, setImgError] = useState(false);
+  const [submitError, setSubmitError] = useState<string | null>(null);
+  const router = useRouter();
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginInput>({
+    resolver: zodResolver(loginSchema),
+    defaultValues: { email: "", password: "" },
+  });
+
+  const onSubmit = async (data: LoginInput) => {
+    setSubmitError(null);
+    try {
+      const res = await authApi.login(data.email, data.password);
+      const token = res.data?.token;
+      if (token && typeof window !== "undefined") {
+        localStorage.setItem("token", token);
+        router.push("/dashboard");
+        router.refresh();
+        return;
+      }
+      setSubmitError("Đăng nhập thất bại.");
+    } catch (err: unknown) {
+      const msg =
+        err && typeof err === "object" && "response" in err
+          ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
+          : null;
+      setSubmitError(msg ?? "Email hoặc mật khẩu không đúng.");
+    }
+  };
+
   return (
     <div className="min-h-screen flex">
-      {/* Left: Form - Đăng nhập */}
       <motion.div
         className="w-full lg:w-1/2 flex flex-col justify-center items-center bg-background px-8 py-12 lg:px-16 shadow-lg"
         initial="initial"
@@ -32,87 +70,90 @@ export default function LoginPage() {
         variants={stagger}
       >
         <div className="w-full max-w-sm flex flex-col gap-6">
-          <motion.h1
-            className="text-3xl font-bold text-foreground"
-            variants={fadeInUp}
-          >
+          <motion.h1 className="text-3xl font-bold text-foreground" variants={fadeInUp}>
             Đăng nhập
           </motion.h1>
 
           <div className="flex flex-col gap-3">
-            <motion.button
-              type="button"
-              className="w-full flex items-center justify-center gap-2 h-12 rounded-xl border border-border bg-background text-foreground hover:bg-muted transition-colors"
-              variants={fadeInUp}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-            >
-              <UserIcon className="w-5 h-5" />
-            </motion.button>
-            <motion.button
-              type="button"
-              className="w-full flex items-center justify-center gap-2 h-12 rounded-xl border border-border bg-background text-foreground hover:bg-muted transition-colors"
-              variants={fadeInUp}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-            >
-              <GoogleIcon className="w-5 h-5" />
-            </motion.button>
-            <motion.button
-              type="button"
-              className="w-full flex items-center justify-center gap-2 h-12 rounded-xl border border-border bg-background text-foreground hover:bg-muted transition-colors"
-              variants={fadeInUp}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-            >
-              <FacebookIcon className="w-5 h-5" />
-            </motion.button>
+            <motion.div variants={fadeInUp}>
+              <Button variant="outline" className="w-full h-12 rounded-xl gap-2" type="button">
+                <UserIcon className="w-5 h-5" />
+                <span>Tiếp tục với Email</span>
+              </Button>
+            </motion.div>
+            <motion.div variants={fadeInUp}>
+              <Button variant="outline" className="w-full h-12 rounded-xl gap-2" type="button">
+                <GoogleIcon className="w-5 h-5" />
+                <span>Tiếp tục với Google</span>
+              </Button>
+            </motion.div>
+            <motion.div variants={fadeInUp}>
+              <Button variant="outline" className="w-full h-12 rounded-xl gap-2" type="button">
+                <FacebookIcon className="w-5 h-5" />
+                <span>Tiếp tục với Facebook</span>
+              </Button>
+            </motion.div>
           </div>
 
-          <motion.div variants={fadeInUp} className="flex flex-col gap-3">
-            <input
-              type="email"
-              placeholder="Email"
-              className="w-full h-12 px-4 rounded-xl border border-border bg-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-            />
-            <input
-              type="password"
-              placeholder="Mật khẩu"
-              className="w-full h-12 px-4 rounded-xl border border-border bg-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-            />
-          </motion.div>
-
-          <motion.button
-            type="button"
-            className="w-full h-12 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary-hover transition-colors shadow-sm"
-            variants={fadeInUp}
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.99 }}
-          >
-            Đăng nhập
-          </motion.button>
+          <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3">
+            <motion.div variants={fadeInUp} className="space-y-2">
+              <Label htmlFor="login-email">Email</Label>
+              <Input
+                id="login-email"
+                type="email"
+                placeholder="Email"
+                className="h-12 rounded-xl"
+                error={errors.email?.message}
+                {...register("email")}
+              />
+            </motion.div>
+            <motion.div variants={fadeInUp} className="space-y-2">
+              <Label htmlFor="login-password">Mật khẩu</Label>
+              <Input
+                id="login-password"
+                type="password"
+                placeholder="Mật khẩu"
+                className="h-12 rounded-xl"
+                error={errors.password?.message}
+                {...register("password")}
+              />
+            </motion.div>
+            {submitError && (
+              <p className="text-sm text-destructive" role="alert">
+                {submitError}
+              </p>
+            )}
+            <motion.div variants={fadeInUp}>
+              <Button
+                type="submit"
+                className="w-full h-12 rounded-xl shadow-sm"
+                disabled={isSubmitting}
+              >
+                {isSubmitting ? "Đang đăng nhập..." : "Đăng nhập"}
+              </Button>
+            </motion.div>
+          </form>
 
           <motion.p
             className="text-xs text-muted-foreground text-center leading-relaxed"
             variants={fadeInUp}
           >
-            Bằng việc tiếp tục với Google, Facebook, Email bạn đồng ý với Điều
-            khoản dịch vụ và Chính sách bảo mật của chúng tôi.
+            Bằng việc tiếp tục với Google, Facebook, Email bạn đồng ý với Điều khoản dịch vụ và
+            Chính sách bảo mật của chúng tôi.
           </motion.p>
 
-          <motion.p
-            className="text-sm text-muted-foreground text-center"
-            variants={fadeInUp}
-          >
+          <motion.p className="text-sm text-muted-foreground text-center" variants={fadeInUp}>
             Chưa có tài khoản?{" "}
-            <Link href="/" className="font-semibold text-primary hover:underline underline-offset-2">
+            <Link
+              href="/register"
+              className="font-semibold text-primary hover:underline underline-offset-2"
+            >
               Đăng ký
             </Link>
           </motion.p>
         </div>
       </motion.div>
 
-      {/* Right: Laptop image */}
       <motion.div
         className="hidden lg:flex lg:w-1/2 relative bg-foreground items-center justify-center overflow-hidden"
         initial={{ opacity: 0 }}
