@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { motion } from "framer-motion";
 import { Button, Input, Card } from "@/components/ui";
 
@@ -68,16 +69,20 @@ export default function MyTasksListPage() {
         </div>
 
         <div className="flex items-center gap-2 mb-4">
-          <Button
-            type="button"
-            variant="outline"
-            size="icon"
-            className="w-10 h-10 rounded-lg border-2 border-dashed"
-            aria-label="Thêm task"
-          >
-            <PlusIcon className="w-5 h-5" />
-          </Button>
-          <span className="text-sm text-muted-foreground">Thêm task mới</span>
+          <Link href="/dashboard/tasks/new">
+            <Button
+              type="button"
+              variant="outline"
+              size="icon"
+              className="w-10 h-10 rounded-lg border-2 border-dashed"
+              aria-label="Thêm task"
+            >
+              <PlusIcon className="w-5 h-5" />
+            </Button>
+          </Link>
+          <Link href="/dashboard/tasks/new" className="text-sm text-muted-foreground hover:text-foreground">
+            Thêm task mới
+          </Link>
         </div>
 
         <div className="overflow-x-auto rounded-xl border border-border">

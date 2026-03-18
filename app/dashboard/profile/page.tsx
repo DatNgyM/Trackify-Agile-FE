@@ -1,21 +1,77 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useCallback } from "react";
+import { useDropzone } from "react-dropzone";
 import { motion } from "framer-motion";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui";
+import { Card, CardHeader, CardTitle, CardContent, Button } from "@/components/ui";
 
 export default function ProfilePage() {
   const [emailNotif, setEmailNotif] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null);
+  const [avatarFile, setAvatarFile] = useState<File | null>(null);
+
+  const onDropAvatar = useCallback((acceptedFiles: File[]) => {
+    const file = acceptedFiles[0];
+    if (file) {
+      setAvatarFile(file);
+      const reader = new FileReader();
+      reader.onload = () => setAvatarPreview(reader.result as string);
+      reader.readAsDataURL(file);
+    }
+  }, []);
+
+  const { getRootProps: getAvatarRootProps, getInputProps: getAvatarInputProps } = useDropzone({
+    onDrop: onDropAvatar,
+    accept: { "image/*": [".png", ".jpg", ".jpeg", ".gif", ".webp"] },
+    maxFiles: 1,
+    multiple: false,
+  });
+
+  const handleUploadAvatar = () => {
+    if (!avatarFile) return;
+    const formData = new FormData();
+    formData.append("avatar", avatarFile);
+    // Gửi lên BE: fetch("/api/profile/avatar", { method: "POST", body: formData })
+    console.log("Upload avatar FormData:", formData.get("avatar"));
+    setAvatarFile(null);
+    setAvatarPreview(null);
+  };
 
   return (
     <div className="space-y-6">
-      {/* Avatar + name */}
-      <div className="flex items-center gap-4">
-        <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center text-2xl font-semibold text-muted-foreground shrink-0 border border-border">
-          J
+      {/* Avatar + name + Upload Avatar */}
+      <div className="flex flex-wrap items-center gap-6">
+        <div className="flex items-center gap-4">
+          {avatarPreview ? (
+            <img
+              src={avatarPreview}
+              alt="Avatar preview"
+              className="w-20 h-20 rounded-full object-cover border border-border shrink-0"
+            />
+          ) : (
+            <div className="w-20 h-20 rounded-full bg-muted flex items-center justify-center text-2xl font-semibold text-muted-foreground shrink-0 border border-border">
+              J
+            </div>
+          )}
+          <div>
+            <h1 className="text-2xl font-bold text-foreground">Jecica</h1>
+            <div className="flex items-center gap-2 mt-2">
+              <div
+                {...getAvatarRootProps()}
+                className="cursor-pointer text-sm text-primary hover:underline"
+              >
+                <input {...getAvatarInputProps()} />
+                Chọn ảnh đại diện
+              </div>
+              {avatarFile && (
+                <Button type="button" size="sm" onClick={handleUploadAvatar}>
+                  Tải lên
+                </Button>
+              )}
+            </div>
+          </div>
         </div>
-        <h1 className="text-2xl font-bold text-foreground">Jecica</h1>
       </div>
 
       {/* Row: Contact info + Overview Stats */}

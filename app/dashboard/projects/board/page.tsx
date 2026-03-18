@@ -41,7 +41,7 @@ const typeStyles: Record<TaskType, string> = {
 export default function ProjectBoardPage() {
   return (
     <Card className="min-h-[500px] p-6">
-      <div className="flex gap-4 overflow-x-auto pb-2">
+      <div className="flex gap-4 overflow-x-auto pb-2 h-full">
         {columns.map((col, colIndex) => {
           const tasks = mockTasks.filter((t) => t.status === col.key);
           return (
@@ -50,8 +50,9 @@ export default function ProjectBoardPage() {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.2, delay: colIndex * 0.05, ease: "easeOut" }}
+              className="flex-1 min-w-[300px]"
             >
-              <Card variant="muted" className="flex-shrink-0 w-80 flex flex-col h-full overflow-hidden border-0 bg-muted/80">
+              <Card variant="muted" className="flex flex-col h-full overflow-hidden border-0 bg-muted/80">
                 <div className="px-4 py-3 bg-muted border-b border-border">
                   <h2 className="text-sm font-semibold text-foreground">{col.label}</h2>
                 </div>

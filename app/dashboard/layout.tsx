@@ -12,6 +12,7 @@ const navItems = [
     icon: ProjectIcon,
     children: [
       { href: "/dashboard/projects", label: "Project list" },
+      { href: "/dashboard/projects/new", label: "Tạo project" },
       { href: "/dashboard/projects/board", label: "Project Board" },
       { href: "/dashboard/projects/settings", label: "Project Settings" },
     ],
@@ -23,6 +24,7 @@ const navItems = [
     children: [
       { href: "/dashboard/tasks", label: "My Tasks List" },
       { href: "/dashboard/tasks/new", label: "Create New Tasks" },
+      { href: "/dashboard/tasks/board", label: "Task Board (Kanban)" },
       { href: "/dashboard/tasks/detail", label: "Task Detail" },
     ],
   },
