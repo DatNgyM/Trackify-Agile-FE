@@ -33,12 +33,12 @@ export default function DashboardPage() {
               <p className="text-sm text-muted-foreground">Tạo project (có key), mở board theo từng project.</p>
               <div className="flex flex-wrap gap-2 mt-auto">
                 <Link href="/dashboard/projects">
-                  <Button size="sm" variant="primary">
+                  <Button size="sm" variant="outline">
                     Danh sách
                   </Button>
                 </Link>
                 <Link href="/dashboard/projects/new">
-                  <Button size="sm" variant="outline">
+                  <Button size="sm" variant="default">
                     Tạo project
                   </Button>
                 </Link>
@@ -60,12 +60,12 @@ export default function DashboardPage() {
               <p className="text-sm text-muted-foreground">Issue được gán cho bạn trên mọi project.</p>
               <div className="flex flex-wrap gap-2 mt-auto">
                 <Link href="/dashboard/tasks">
-                  <Button size="sm" variant="primary">
+                  <Button size="sm" variant="outline">
                     Được gán cho tôi
                   </Button>
                 </Link>
                 <Link href="/dashboard/tasks/new">
-                  <Button size="sm" variant="outline">
+                  <Button size="sm" variant="default">
                     Tạo issue
                   </Button>
                 </Link>
@@ -79,14 +79,14 @@ export default function DashboardPage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2, delay: 0.15, ease: "easeOut" }}
         >
-          <Card variant="muted" className="h-full flex flex-col">
+          <Card className="h-full flex flex-col">
             <CardHeader>
               <CardTitle className="text-base">Hồ sơ</CardTitle>
             </CardHeader>
             <CardContent className="flex-1 flex flex-col gap-3">
               <p className="text-sm text-muted-foreground">Cập nhật tên, email, avatar; xem thống kê từ API.</p>
               <Link href="/dashboard/profile" className="mt-auto">
-                <Button size="sm" variant="secondary">
+                <Button size="sm" variant="default">
                   Mở profile
                 </Button>
               </Link>

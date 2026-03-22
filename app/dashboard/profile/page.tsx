@@ -6,7 +6,16 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { displayInitials, getUserProfile, setUserProfile } from "@/lib/auth-profile";
 import { useDropzone } from "react-dropzone";
 import { motion } from "framer-motion";
-import { Card, CardHeader, CardTitle, CardContent, Button, Input, Label } from "@/components/ui";
+import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Switch } from "@/components/ui/switch";
+import {
+  STORAGE_EMAIL_NOTIFICATIONS,
+  readDarkModePreference,
+  persistDarkMode,
+} from "@/lib/theme-preferences";
 import { ProfileActivityChart } from "@/components/dashboard/ProfileActivityChart";
 import {
   aggregateMyDashboard,
@@ -45,6 +54,15 @@ export default function ProfilePage() {
   const fullNameWatch = watch("fullName");
   const emailWatch = watch("email");
   const titleName = fullNameWatch?.trim() ? fullNameWatch.trim() : displayName;
+
+  useEffect(() => {
+    try {
+      setDarkMode(readDarkModePreference());
+      setEmailNotif(localStorage.getItem(STORAGE_EMAIL_NOTIFICATIONS) === "true");
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   useEffect(() => {
     let cancelled = false;
@@ -174,16 +192,16 @@ export default function ProfilePage() {
             <img
               src={avatarPreview}
               alt="Avatar preview"
-              className="w-[88px] h-[88px] sm:w-24 sm:h-24 rounded-full object-cover border-2 border-border shrink-0 shadow-sm"
+              className="w-[88px] h-[88px] sm:w-24 sm:h-24 rounded-full object-cover border-2 border-black/80 shrink-0 shadow-sm"
             />
           ) : avatarPublicUrl ? (
             <img
               src={avatarPublicUrl}
               alt=""
-              className="w-[88px] h-[88px] sm:w-24 sm:h-24 rounded-full object-cover border-2 border-border shrink-0 shadow-sm"
+              className="w-[88px] h-[88px] sm:w-24 sm:h-24 rounded-full object-cover border-2 border-black/80 shrink-0 shadow-sm"
             />
           ) : (
-            <div className="w-[88px] h-[88px] sm:w-24 sm:h-24 rounded-full bg-muted flex items-center justify-center text-2xl font-semibold text-muted-foreground shrink-0 border-2 border-border">
+            <div className="w-[88px] h-[88px] sm:w-24 sm:h-24 rounded-full bg-secondary flex items-center justify-center text-2xl font-semibold text-foreground shrink-0 border-2 border-black/80 shadow-sm">
               {displayInitials(displayName)}
             </div>
           )}
@@ -217,7 +235,7 @@ export default function ProfilePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2, ease: "easeOut" }}
         >
-          <Card variant="muted" className="h-full flex flex-col min-h-0">
+          <Card className="h-full flex flex-col min-h-0">
             <CardHeader className="pb-3 flex flex-row items-center justify-between">
               <CardTitle className="text-base sm:text-lg">Thông tin liên hệ</CardTitle>
             </CardHeader>
@@ -231,7 +249,7 @@ export default function ProfilePage() {
               </ul>
 
               {isEditingInfo ? (
-                <div className="border-t border-border pt-5 mt-auto">
+                <div className="border-t border-black/80 pt-5 mt-auto">
                   <p className="text-xs font-semibold uppercase tracking-wide text-muted-foreground mb-3 flex items-center gap-2">
                     Chỉnh sửa
                     <PencilIcon className="w-3.5 h-3.5" />
@@ -243,9 +261,9 @@ export default function ProfilePage() {
                         id="profile-fullName"
                         autoComplete="name"
                         disabled={!isNestBackendConfigured() || isSubmitting}
-                        error={errors.fullName?.message}
                         {...register("fullName")}
                       />
+                      {errors.fullName?.message && <p className="text-xs text-destructive">{errors.fullName.message}</p>}
                     </div>
                     <div className="space-y-2">
                       <Label htmlFor="profile-email">Email</Label>
@@ -254,9 +272,9 @@ export default function ProfilePage() {
                         type="email"
                         autoComplete="email"
                         disabled={!isNestBackendConfigured() || isSubmitting}
-                        error={errors.email?.message}
                         {...register("email")}
                       />
+                      {errors.email?.message && <p className="text-xs text-destructive">{errors.email.message}</p>}
                     </div>
                     {!isNestBackendConfigured() ? (
                       <p className="text-xs text-muted-foreground">
@@ -295,7 +313,7 @@ export default function ProfilePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2, delay: 0.05, ease: "easeOut" }}
         >
-          <Card variant="muted" className="h-full flex flex-col min-h-[240px] lg:min-h-[280px]">
+          <Card className="h-full flex flex-col min-h-[240px] lg:min-h-[280px]">
             <CardHeader className="pb-2">
               <CardTitle className="text-base sm:text-lg">Tổng quan</CardTitle>
               {statsNote ? (
@@ -312,7 +330,7 @@ export default function ProfilePage() {
                     animate={{ opacity: 1, y: 0 }}
                     transition={{ duration: 0.2, delay: 0.06 + i * 0.04, ease: "easeOut" }}
                   >
-                    <Card className="h-full bg-background border border-border shadow-sm rounded-xl p-4 flex flex-col justify-center items-center text-center">
+                    <Card className="h-full bg-card border border-border shadow-[0_4px_12px_rgba(0,0,0,0.05)] rounded-lg p-4 flex flex-col justify-center items-center text-center">
                       <p className="text-sm font-medium text-foreground mb-3">{stat.label}</p>
                       <p className="text-4xl sm:text-5xl font-light text-foreground tabular-nums tracking-tight">{stat.value}</p>
                     </Card>
@@ -332,7 +350,7 @@ export default function ProfilePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2, delay: 0.1, ease: "easeOut" }}
         >
-          <Card variant="muted" className="h-full flex flex-col">
+          <Card className="h-full flex flex-col">
             <CardHeader>
               <CardTitle className="text-base sm:text-lg">Hoạt động (14 ngày)</CardTitle>
               <p className="text-xs text-muted-foreground font-normal mt-1">
@@ -351,7 +369,7 @@ export default function ProfilePage() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.2, delay: 0.15, ease: "easeOut" }}
         >
-          <Card variant="muted" className="h-full flex flex-col">
+          <Card className="h-full flex flex-col">
             <CardHeader>
               <div className="flex items-center gap-2">
                 <GearIcon className="w-5 h-5 text-muted-foreground shrink-0" />
@@ -360,12 +378,36 @@ export default function ProfilePage() {
             </CardHeader>
             <CardContent>
               <div className="space-y-5 pt-1">
-                <ToggleRow
-                  label="Email Notifications"
-                  checked={emailNotif}
-                  onChange={setEmailNotif}
-                />
-                <ToggleRow label="Dark Mode" checked={darkMode} onChange={setDarkMode} />
+                <div className="flex items-center justify-between gap-4">
+                  <Label htmlFor="settings-email-notif" className="text-sm font-medium text-foreground cursor-pointer">
+                    Thông báo email
+                  </Label>
+                  <Switch
+                    id="settings-email-notif"
+                    checked={emailNotif}
+                    onCheckedChange={(v) => {
+                      setEmailNotif(v);
+                      try {
+                        localStorage.setItem(STORAGE_EMAIL_NOTIFICATIONS, v ? "true" : "false");
+                      } catch {
+                        /* ignore */
+                      }
+                    }}
+                  />
+                </div>
+                <div className="flex items-center justify-between gap-4">
+                  <Label htmlFor="settings-dark-mode" className="text-sm font-medium text-foreground cursor-pointer">
+                    Chế độ tối
+                  </Label>
+                  <Switch
+                    id="settings-dark-mode"
+                    checked={darkMode}
+                    onCheckedChange={(v) => {
+                      setDarkMode(v);
+                      persistDarkMode(v);
+                    }}
+                  />
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -417,37 +459,6 @@ function MailGlyph({ className }: { className?: string }) {
         d="M21.75 6.75v10.5a2.25 2.25 0 01-2.25 2.25h-15a2.25 2.25 0 01-2.25-2.25V6.75m19.5 0A2.25 2.25 0 0019.5 4.5h-15a2.25 2.25 0 00-2.25 2.25m19.5 0v.243a2.25 2.25 0 01-1.07 1.916l-7.5 4.615a2.25 2.25 0 01-2.36 0L3.32 8.91a2.25 2.25 0 01-1.07-1.916V6.75"
       />
     </svg>
-  );
-}
-
-function ToggleRow({
-  label,
-  checked,
-  onChange,
-}: {
-  label: string;
-  checked: boolean;
-  onChange: (v: boolean) => void;
-}) {
-  return (
-    <div className="flex items-center justify-between">
-      <span className="text-sm text-foreground">{label}</span>
-      <button
-        type="button"
-        role="switch"
-        aria-checked={checked}
-        onClick={() => onChange(!checked)}
-        className={`relative w-11 h-6 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 ${
-          checked ? "bg-primary" : "bg-muted-foreground/30"
-        }`}
-      >
-        <span
-          className={`absolute top-1 w-4 h-4 rounded-full bg-background shadow transition-transform ${
-            checked ? "left-[24px]" : "left-1"
-          }`}
-        />
-      </button>
-    </div>
   );
 }
 

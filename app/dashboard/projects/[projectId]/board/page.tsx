@@ -4,7 +4,10 @@ import * as React from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { motion } from "framer-motion";
-import { Button, Card } from "@/components/ui";
+import { Button } from "@/components/ui/button";
+import { Card } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { getApiErrorMessage } from "@/lib/api";
 import { fetchIssueBoard, fetchProject, fetchProjectSprints, reorderIssue } from "@/lib/projects-issues-api";
 import type { BoardIssue, IssueStatusBE, Sprint } from "@/lib/types/issues";
@@ -47,10 +50,11 @@ export default function ProjectBoardPage() {
     setLoading(true);
     setError(null);
     try {
+      const actualSprintId = selectedSprintId === "all" ? "" : selectedSprintId;
       const [proj, sp, b] = await Promise.all([
         fetchProject(projectId),
         fetchProjectSprints(projectId),
-        fetchIssueBoard(projectId, selectedSprintId || undefined)
+        fetchIssueBoard(projectId, actualSprintId || undefined)
       ]);
       setProjectName(proj.name);
       setSprints(sp);
@@ -160,19 +164,20 @@ export default function ProjectBoardPage() {
           </h1>
         </div>
         <div className="flex items-center gap-4">
-          <select
-            value={selectedSprintId}
-            onChange={(e) => setSelectedSprintId(e.target.value)}
-            className="h-9 rounded-md border border-border bg-background px-3 text-sm"
-          >
-            <option value="">Tất cả (Backlog + Sprints)</option>
-            {sprints.map((s) => (
-              <option key={s.id} value={s.id}>{s.name} ({s.status})</option>
-            ))}
-          </select>
+          <Select value={selectedSprintId} onValueChange={(val) => setSelectedSprintId(val || "")}>
+            <SelectTrigger className="w-[240px]">
+              <SelectValue placeholder="Tất cả (Backlog + Sprints)" />
+            </SelectTrigger>
+            <SelectContent>
+              <SelectItem value="all">Tất cả (Backlog + Sprints)</SelectItem>
+              {sprints.map((s) => (
+                <SelectItem key={s.id} value={s.id}>{s.name} ({s.status})</SelectItem>
+              ))}
+            </SelectContent>
+          </Select>
           <div className="flex gap-2">
             <Link href={`/dashboard/projects/${projectId}/issues/new`}>
-              <Button size="sm" variant="primary">
+              <Button size="sm">
                 Tạo issue
               </Button>
             </Link>
@@ -238,7 +243,7 @@ function DroppableColumn({ status, label, issues, projectId }: { status: IssueSt
   });
 
   return (
-    <Card variant="muted" className={`flex flex-col h-full overflow-hidden border transition-colors ${isOver ? "bg-muted border-primary/50" : "bg-muted/80"}`}>
+    <Card className={`flex flex-col h-full overflow-hidden border transition-colors ${isOver ? "bg-muted border-primary/50" : "bg-muted/30"}`}>
       <div className="px-3 py-2 border-b border-border bg-muted/50">
         <h2 className="text-sm font-semibold text-foreground">
           {label} <span className="text-muted-foreground font-normal">({issues.length})</span>

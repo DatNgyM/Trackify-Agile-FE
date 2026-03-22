@@ -346,7 +346,9 @@ export default function ProjectSettingsPage() {
                 <Input value={key} disabled className="bg-muted font-mono" />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="proj-name" required>Tên project</Label>
+                <Label htmlFor="proj-name">
+                  Tên project <span className="text-destructive">*</span>
+                </Label>
                 <Input id="proj-name" value={name} onChange={(e) => setName(e.target.value)} required />
               </div>
               <div className="space-y-2">
@@ -578,7 +580,9 @@ export default function ProjectSettingsPage() {
             <h3 className="text-lg font-medium mb-4">Tạo Sprint mới</h3>
             <form onSubmit={(e) => void handleAddSprint(e)} className="grid grid-cols-1 sm:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="new-sprint-name" required>Tên Sprint</Label>
+                <Label htmlFor="new-sprint-name">
+                  Tên Sprint <span className="text-destructive">*</span>
+                </Label>
                 <Input
                   id="new-sprint-name"
                   value={newSprintName}
@@ -715,7 +719,7 @@ export default function ProjectSettingsPage() {
                             </>
                           )}
                           {canManageSprints(myRole) && s.status === "ACTIVE" && (
-                            <Button size="sm" variant="primary" onClick={() => void handleCompleteSprint(s.id)}>
+                            <Button size="sm" variant="default" onClick={() => void handleCompleteSprint(s.id)}>
                               Hoàn thành
                             </Button>
                           )}

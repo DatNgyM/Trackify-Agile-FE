@@ -64,7 +64,9 @@ export function CreateSubTaskModal({
           </p>
         )}
         <div className="space-y-2">
-          <Label htmlFor="subtask-title" required>Tiêu đề task con</Label>
+          <Label htmlFor="subtask-title">
+            Tiêu đề task con <span className="text-destructive">*</span>
+          </Label>
           <Input
             id="subtask-title"
             name="title"

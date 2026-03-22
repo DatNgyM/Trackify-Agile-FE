@@ -2,7 +2,8 @@
 
 import * as React from "react";
 import { motion } from "framer-motion";
-import { Card, Button } from "@/components/ui";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 import { getApiErrorMessage } from "@/lib/api";
 import { fetchNotifications, markNotificationAsRead, markAllNotificationsAsRead } from "@/lib/projects-issues-api";
 import type { AppNotification } from "@/lib/types/issues";
@@ -76,33 +77,37 @@ export default function NotificationsPage() {
       {loading ? (
         <p className="text-sm text-muted-foreground">Đang tải…</p>
       ) : notifications.length === 0 ? (
-        <Card className="p-6 text-center">
-          <p className="text-sm text-muted-foreground">Không có thông báo nào.</p>
+        <Card>
+          <CardContent className="p-6 text-center">
+            <p className="text-sm text-muted-foreground">Không có thông báo nào.</p>
+          </CardContent>
         </Card>
       ) : (
-        <Card className="divide-y divide-border">
-          {notifications.map((n) => (
-            <div key={n.id} className={`p-4 flex gap-4 transition-colors ${n.isRead ? "bg-background" : "bg-primary/5"}`}>
-              <div className="flex-1 min-w-0">
-                <p className={`text-sm ${n.isRead ? "text-muted-foreground" : "text-foreground font-medium"}`}>
-                  {n.title}
-                </p>
-                <p className="text-sm text-muted-foreground mt-1 whitespace-pre-wrap">
-                  {n.message || n.content || ""}
-                </p>
-                <p className="text-xs text-muted-foreground mt-2">
-                  {new Date(n.createdAt).toLocaleString()}
-                </p>
+        <Card className="overflow-hidden">
+          <div className="divide-y divide-black/80">
+            {notifications.map((n) => (
+              <div key={n.id} className={`p-4 flex gap-4 transition-colors ${n.isRead ? "bg-card" : "bg-black/5"}`}>
+                <div className="flex-1 min-w-0">
+                  <p className={`text-sm ${n.isRead ? "text-muted-foreground" : "text-foreground font-medium"}`}>
+                    {n.title}
+                  </p>
+                  <p className="text-sm text-muted-foreground mt-1 whitespace-pre-wrap">
+                    {n.message || n.content || ""}
+                  </p>
+                  <p className="text-xs text-muted-foreground mt-2">
+                    {new Date(n.createdAt).toLocaleString()}
+                  </p>
+                </div>
+                {!n.isRead && (
+                  <button
+                    onClick={() => void handleMarkRead(n.id)}
+                    className="w-2 h-2 rounded-full bg-primary shrink-0 mt-1.5"
+                    title="Đánh dấu đã đọc"
+                  />
+                )}
               </div>
-              {!n.isRead && (
-                <button
-                  onClick={() => void handleMarkRead(n.id)}
-                  className="w-2 h-2 rounded-full bg-primary shrink-0 mt-1.5"
-                  title="Đánh dấu đã đọc"
-                />
-              )}
-            </div>
-          ))}
+            ))}
+          </div>
         </Card>
       )}
     </motion.div>

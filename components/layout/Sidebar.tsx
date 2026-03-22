@@ -2,33 +2,48 @@
 
 import Link from "next/link";
 import { Nav, NavItem } from "./Nav";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Separator } from "@/components/ui/separator";
+import { Button } from "@/components/ui/button";
+import { logoutAndClear } from "@/lib/api";
+import { useRouter } from "next/navigation";
 
 interface SidebarProps {
   items: NavItem[];
 }
 
 export function Sidebar({ items }: SidebarProps) {
+  const router = useRouter();
+
+  async function handleLogout() {
+    await logoutAndClear();
+    router.push("/login");
+  }
+
   return (
-    <aside className="w-64 shrink-0 bg-background flex flex-col py-6 border-r border-border h-full overflow-y-auto shadow-sm flex">
-      <div className="px-6 mb-8">
+    <aside className="w-64 shrink-0 flex flex-col h-full bg-[var(--sidebar)] text-[var(--sidebar-foreground)] z-10 shadow-[4px_0_24px_rgba(0,0,0,0.02)]">
+      <div className="h-16 px-6 flex items-center shrink-0">
         <Link href="/dashboard" className="flex items-center gap-2">
           <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
             <span className="text-primary-foreground font-bold text-lg leading-none">T</span>
           </div>
-          <span className="text-xl font-bold text-foreground tracking-tight">Trackify</span>
+          <span className="text-xl font-bold text-white tracking-tight">Trackify</span>
         </Link>
       </div>
       
-      <Nav items={items} />
+      <ScrollArea className="flex-1 py-4">
+        <Nav items={items} />
+      </ScrollArea>
 
-      <div className="px-4 pt-4 mt-auto border-t border-border mx-2">
-        <Link
-          href="/login"
-          className="flex items-center gap-3 px-4 py-3 rounded-xl transition-colors text-muted-foreground hover:bg-destructive/10 hover:text-destructive"
+      <div className="p-4 mt-auto">
+        <Button 
+          variant="ghost" 
+          className="w-full justify-start text-white/70 hover:bg-white/10 hover:text-white"
+          onClick={() => void handleLogout()}
         >
-          <LogoutIcon className="w-5 h-5 shrink-0" />
+          <LogoutIcon className="w-5 h-5 mr-3 shrink-0" />
           <span className="font-medium">Logout</span>
-        </Link>
+        </Button>
       </div>
     </aside>
   );

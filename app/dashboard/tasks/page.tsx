@@ -75,7 +75,7 @@ export default function MyTasksListPage() {
             Issue được gán cho tôi
           </span>
           <Link href="/dashboard/tasks/new">
-            <Button type="button" variant="primary" size="sm">
+            <Button type="button" variant="default" size="sm">
               Tạo issue
             </Button>
           </Link>
@@ -113,7 +113,7 @@ export default function MyTasksListPage() {
                 <Button
                   key={f}
                   type="button"
-                  variant={filter === f ? "primary" : "secondary"}
+                  variant={filter === f ? "default" : "secondary"}
                   size="sm"
                   onClick={() => setFilter(f)}
                   className="rounded-full"
@@ -128,10 +128,10 @@ export default function MyTasksListPage() {
         {loading ? (
           <p className="text-sm text-muted-foreground">Đang tải…</p>
         ) : (
-          <div className="overflow-x-auto rounded-xl border border-border">
+          <div className="overflow-x-auto rounded-xl border border-black/80 shadow-[0_4px_12px_rgba(0,0,0,0.05)] bg-card">
             <table className="w-full min-w-[640px]">
               <thead>
-                <tr className="bg-muted text-left text-sm font-semibold text-foreground">
+                <tr className="bg-secondary text-left text-sm font-semibold text-foreground border-b border-black/80">
                   <th className="px-4 py-3 rounded-tl-xl">Key / Tiêu đề</th>
                   <th className="px-4 py-3">Project</th>
                   <th className="px-4 py-3">Loại</th>
@@ -143,7 +143,7 @@ export default function MyTasksListPage() {
                 {filtered.map((task, i) => (
                   <motion.tr
                     key={`${task.projectId}-${task.issueKey}`}
-                    className="border-t border-border bg-muted/30 hover:bg-muted/50 transition-colors"
+                    className="border-b border-black/80 last:border-0 bg-card hover:bg-black/5 transition-colors"
                     initial={{ opacity: 0 }}
                     animate={{ opacity: 1 }}
                     transition={{ delay: Math.min(i * 0.02, 0.3) }}

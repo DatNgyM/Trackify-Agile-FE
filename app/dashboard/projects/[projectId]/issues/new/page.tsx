@@ -4,7 +4,12 @@ import * as React from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Button, Card, Input, Label } from "@/components/ui";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { getApiErrorMessage } from "@/lib/api";
 import {
   createIssue,
@@ -104,19 +109,19 @@ export default function NewIssuePage() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
     >
-      <Card className="p-6 max-w-2xl">
-        <div className="flex items-center gap-4 mb-6">
+      <Card className="max-w-2xl mx-auto">
+        <CardHeader className="flex flex-row items-center gap-4 space-y-0 pb-6">
           <Link href={`/dashboard/projects/${projectId}/board`}>
             <Button type="button" variant="ghost" size="icon" aria-label="Quay lại">
               <ArrowLeftIcon className="w-5 h-5" />
             </Button>
           </Link>
           <div>
-            <h1 className="text-xl font-semibold text-foreground">Tạo issue</h1>
-            {projectName && <p className="text-sm text-muted-foreground">{projectName}</p>}
+            <CardTitle className="text-xl">Tạo issue</CardTitle>
+            {projectName && <CardDescription>{projectName}</CardDescription>}
           </div>
-        </div>
-
+        </CardHeader>
+        <CardContent>
         {error && (
           <p className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg px-3 py-2 mb-4">
             {error}
@@ -125,8 +130,8 @@ export default function NewIssuePage() {
 
         <form onSubmit={(e) => void handleSubmit(e)} className="space-y-5">
           <div className="space-y-2">
-            <Label htmlFor="issue-title" required>
-              Tiêu đề
+            <Label htmlFor="issue-title">
+              Tiêu đề <span className="text-destructive">*</span>
             </Label>
             <Input
               id="issue-title"
@@ -140,64 +145,57 @@ export default function NewIssuePage() {
 
           <div className="space-y-2">
             <Label htmlFor="issue-desc">Mô tả</Label>
-            <textarea
+            <Textarea
               id="issue-desc"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
               rows={4}
               maxLength={5000}
-              className="flex w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
             />
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div className="space-y-2">
               <Label htmlFor="issue-type">Loại</Label>
-              <select
-                id="issue-type"
-                value={type}
-                onChange={(e) => setType(e.target.value as IssueTypeBE)}
-                className="flex h-9 w-full rounded-md border border-border bg-background px-3 text-sm"
-              >
-                {TYPES.map((t) => (
-                  <option key={t} value={t}>
-                    {t}
-                  </option>
-                ))}
-              </select>
+              <Select value={type} onValueChange={(v) => setType((v || "TASK") as IssueTypeBE)}>
+                <SelectTrigger id="issue-type">
+                  <SelectValue placeholder="Chọn loại" />
+                </SelectTrigger>
+                <SelectContent>
+                  {TYPES.map((t) => (
+                    <SelectItem key={t} value={t}>{t}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
             <div className="space-y-2">
               <Label htmlFor="issue-priority">Độ ưu tiên</Label>
-              <select
-                id="issue-priority"
-                value={priority}
-                onChange={(e) => setPriority(e.target.value as IssuePriorityBE)}
-                className="flex h-9 w-full rounded-md border border-border bg-background px-3 text-sm"
-              >
-                {PRIORITIES.map((p) => (
-                  <option key={p} value={p}>
-                    {p}
-                  </option>
-                ))}
-              </select>
+              <Select value={priority} onValueChange={(v) => setPriority((v || "MEDIUM") as IssuePriorityBE)}>
+                <SelectTrigger id="issue-priority">
+                  <SelectValue placeholder="Chọn độ ưu tiên" />
+                </SelectTrigger>
+                <SelectContent>
+                  {PRIORITIES.map((p) => (
+                    <SelectItem key={p} value={p}>{p}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
           </div>
 
           <div className="space-y-2">
             <Label htmlFor="issue-assignee">Người phụ trách (tuỳ chọn)</Label>
-            <select
-              id="issue-assignee"
-              value={assigneeId}
-              onChange={(e) => setAssigneeId(e.target.value)}
-              className="flex h-9 w-full rounded-md border border-border bg-background px-3 text-sm"
-            >
-              <option value="">— Không gán —</option>
-              {members.map((m) => (
-                <option key={m.id} value={m.id}>
-                  {m.name}
-                </option>
-              ))}
-            </select>
+            <Select value={assigneeId || "unassigned"} onValueChange={(v) => setAssigneeId(v === "unassigned" ? "" : (v || ""))}>
+              <SelectTrigger id="issue-assignee">
+                <SelectValue placeholder="— Không gán —" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="unassigned">— Không gán —</SelectItem>
+                {members.map((m) => (
+                  <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
           </div>
 
           {projectLabels.length > 0 && (
@@ -210,7 +208,7 @@ export default function NewIssuePage() {
                       type="checkbox"
                       checked={selectedLabelIds.has(l.id)}
                       onChange={() => toggleLabel(l.id)}
-                      className="rounded border-border text-primary"
+                      className="rounded border-border text-primary h-4 w-4"
                     />
                     <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: l.color }} />
                     {l.name}
@@ -220,7 +218,7 @@ export default function NewIssuePage() {
             </div>
           )}
 
-          <div className="flex gap-3">
+          <div className="flex gap-3 pt-2">
             <Button type="submit" disabled={submitting}>
               {submitting ? "Đang tạo…" : "Tạo issue"}
             </Button>
@@ -231,6 +229,7 @@ export default function NewIssuePage() {
             </Link>
           </div>
         </form>
+        </CardContent>
       </Card>
     </motion.div>
   );

@@ -1,46 +1,25 @@
-import * as React from "react";
+import * as React from "react"
+import { Input as InputPrimitive } from "@base-ui/react/input"
 
-export interface InputProps
-  extends React.InputHTMLAttributes<HTMLInputElement> {
-  error?: string;
-}
+import { cn } from "@/lib/utils"
 
-const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className = "", type = "text", error, disabled, id, ...props }, ref) => {
-    const inputId = id ?? props.name ?? `input-${React.useId()}`;
+/** Bắt buộc forwardRef để react-hook-form `register()` gắn ref đúng — không thì submit gửi rỗng. */
+const Input = React.forwardRef<HTMLInputElement, React.ComponentProps<"input">>(
+  function Input({ className, type, ...props }, ref) {
     return (
-      <div className="w-full">
-        <input
-          ref={ref}
-          id={inputId}
-          type={type}
-          disabled={disabled}
-          aria-invalid={!!error}
-          aria-describedby={error ? `${inputId}-error` : undefined}
-          className={`
-            flex h-9 w-full rounded-md border bg-background px-3 py-1 text-sm
-            placeholder:text-muted-foreground
-            focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2
-            disabled:cursor-not-allowed disabled:opacity-50
-            ${error ? "border-destructive focus-visible:ring-destructive" : "border-border"}
-            ${className}
-          `.replace(/\s+/g, " ")}
-          {...props}
-        />
-        {error && (
-          <p
-            id={`${inputId}-error`}
-            className="mt-1 text-sm text-destructive"
-            role="alert"
-          >
-            {error}
-          </p>
+      <InputPrimitive
+        ref={ref}
+        type={type}
+        data-slot="input"
+        className={cn(
+          "h-10 w-full min-w-0 rounded-xl border-0 bg-[#f0f4f8] px-3 py-2 text-base transition-colors outline-none file:inline-flex file:h-6 file:border-0 file:bg-transparent file:text-sm file:font-medium file:text-foreground placeholder:text-muted-foreground focus-visible:ring-2 focus-visible:ring-ring/50 disabled:pointer-events-none disabled:cursor-not-allowed disabled:opacity-50 aria-invalid:ring-2 aria-invalid:ring-destructive/50 md:text-sm dark:bg-input/30",
+          className
         )}
-      </div>
-    );
+        {...props}
+      />
+    )
   }
-);
+)
+Input.displayName = "Input"
 
-Input.displayName = "Input";
-
-export { Input };
+export { Input }

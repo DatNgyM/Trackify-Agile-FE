@@ -72,8 +72,8 @@ export default function CreateProjectPage() {
 
         <form onSubmit={(e) => void handleSubmit(e)} className="space-y-5">
           <div className="space-y-2">
-            <Label htmlFor="project-name" required>
-              Tên project
+            <Label htmlFor="project-name">
+              Tên project <span className="text-destructive">*</span>
             </Label>
             <Input
               id="project-name"
@@ -87,8 +87,8 @@ export default function CreateProjectPage() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="project-key" required>
-              Key (mã viết tắt)
+            <Label htmlFor="project-key">
+              Key (mã viết tắt) <span className="text-destructive">*</span>
             </Label>
             <Input
               id="project-key"

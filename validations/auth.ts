@@ -21,6 +21,10 @@ export const registerSchema = z.object({
       registerPasswordRegex,
       "Mật khẩu tối thiểu 8 ký tự, gồm chữ hoa, chữ thường, số và một ký tự @#$%^&*!"
     ),
+  confirmPassword: z.string().min(1, "Nhập lại mật khẩu"),
+}).refine((data) => data.password === data.confirmPassword, {
+  message: "Mật khẩu không khớp",
+  path: ["confirmPassword"],
 });
 
 export type LoginInput = z.infer<typeof loginSchema>;

@@ -4,7 +4,13 @@ import * as React from "react";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import { motion } from "framer-motion";
-import { Button, Card, Label, Input } from "@/components/ui";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
+import { Label } from "@/components/ui/label";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Badge } from "@/components/ui/badge";
 import { getApiErrorMessage, fetchMe } from "@/lib/api";
 import {
   fetchIssue,
@@ -314,9 +320,11 @@ export default function IssueDetailPage() {
       ) : issue ? (
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
           <div className="lg:col-span-2 space-y-6">
-            <Card className="p-6">
-              <div className="flex justify-between items-start mb-4">
-                <p className="text-sm font-mono text-primary">{issueKey}</p>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <div className="space-y-1">
+                  <CardDescription className="font-mono text-primary">{issueKey}</CardDescription>
+                </div>
                 <div className="flex gap-2">
                   <Button variant="outline" size="sm" onClick={() => setIsEditing(!isEditing)}>
                     {isEditing ? "Hủy sửa" : "Sửa"}
@@ -327,8 +335,8 @@ export default function IssueDetailPage() {
                     </Button>
                   )}
                 </div>
-              </div>
-
+              </CardHeader>
+              <CardContent>
               {isEditing ? (
                 <form onSubmit={(e) => void handleSaveIssue(e)} className="space-y-4">
                   <div className="space-y-2">
@@ -337,58 +345,72 @@ export default function IssueDetailPage() {
                   </div>
                   <div className="space-y-2">
                     <Label>Mô tả</Label>
-                    <textarea
+                    <Textarea
                       value={editDesc}
                       onChange={(e) => setEditDesc(e.target.value)}
                       rows={4}
-                      className="flex w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
                     />
                   </div>
                   <div className="grid grid-cols-2 gap-4">
                     <div className="space-y-2">
                       <Label>Loại</Label>
-                      <select value={editType} onChange={(e) => setEditType(e.target.value)} className="flex h-9 w-full rounded-md border border-border bg-background px-3 text-sm">
-                        {["EPIC", "STORY", "TASK", "BUG", "SUBTASK"].map((t) => (
-                          <option key={t} value={t}>{t}</option>
-                        ))}
-                      </select>
+                      <Select value={editType} onValueChange={(v) => setEditType(v || "")}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Chọn loại" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {["EPIC", "STORY", "TASK", "BUG", "SUBTASK"].map((t) => (
+                            <SelectItem key={t} value={t}>{t}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="space-y-2">
                       <Label>Độ ưu tiên</Label>
-                      <select value={editPriority} onChange={(e) => setEditPriority(e.target.value)} className="flex h-9 w-full rounded-md border border-border bg-background px-3 text-sm">
-                        {["LOWEST", "LOW", "MEDIUM", "HIGH", "HIGHEST"].map((p) => (
-                          <option key={p} value={p}>{p}</option>
-                        ))}
-                      </select>
+                      <Select value={editPriority} onValueChange={(v) => setEditPriority(v || "")}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="Chọn độ ưu tiên" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          {["LOWEST", "LOW", "MEDIUM", "HIGH", "HIGHEST"].map((p) => (
+                            <SelectItem key={p} value={p}>{p}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                     <div className="space-y-2 col-span-2">
                       <Label>Người phụ trách</Label>
-                      <select value={editAssigneeId} onChange={(e) => setEditAssigneeId(e.target.value)} className="flex h-9 w-full rounded-md border border-border bg-background px-3 text-sm">
-                        <option value="">— Không gán —</option>
-                        {members.map((m) => (
-                          <option key={m.id} value={m.id}>{m.name}</option>
-                        ))}
-                      </select>
+                      <Select value={editAssigneeId || "unassigned"} onValueChange={(v) => setEditAssigneeId(v === "unassigned" ? "" : (v || ""))}>
+                        <SelectTrigger>
+                          <SelectValue placeholder="— Không gán —" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="unassigned">— Không gán —</SelectItem>
+                          {members.map((m) => (
+                            <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
+                          ))}
+                        </SelectContent>
+                      </Select>
                     </div>
                   </div>
                   <Button type="submit">Lưu thay đổi</Button>
                 </form>
               ) : (
                 <>
-                  <h1 className="text-2xl font-semibold text-foreground">{title}</h1>
-                  <div className="flex flex-wrap gap-2 mt-3 text-xs">
-                    <span className="px-2 py-0.5 rounded-full bg-muted">{status}</span>
-                    <span className="px-2 py-0.5 rounded-full bg-muted">{type}</span>
-                    <span className="px-2 py-0.5 rounded-full bg-muted">{priority}</span>
+                  <CardTitle className="text-2xl">{title}</CardTitle>
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    <Badge variant="secondary">{status}</Badge>
+                    <Badge variant="outline">{type}</Badge>
+                    <Badge variant="outline">{priority}</Badge>
                     {assignee?.fullName && (
-                      <span className="px-2 py-0.5 rounded-full bg-muted">Assignee: {assignee.fullName}</span>
+                      <Badge variant="secondary">Assignee: {assignee.fullName}</Badge>
                     )}
                   </div>
                   <div className="flex flex-wrap gap-2 mt-3">
                     {issueLabels.map((l) => (
-                      <span key={l.id} className="px-2 py-0.5 rounded-full text-xs font-medium text-white" style={{ backgroundColor: l.color }}>
+                      <Badge key={l.id} style={{ backgroundColor: l.color, color: 'white' }}>
                         {l.name}
-                      </span>
+                      </Badge>
                     ))}
                   </div>
                   {description ? (
@@ -398,19 +420,22 @@ export default function IssueDetailPage() {
                   )}
                 </>
               )}
+              </CardContent>
             </Card>
 
-            <Card className="p-6">
-              <h2 className="text-lg font-semibold mb-4">Bình luận</h2>
+            <Card>
+              <CardHeader>
+                <CardTitle className="text-lg">Bình luận</CardTitle>
+              </CardHeader>
+              <CardContent>
               <form onSubmit={(e) => void handlePostComment(e)} className="space-y-3 mb-6">
                 <Label htmlFor="new-comment">Thêm bình luận</Label>
-                <textarea
+                <Textarea
                   id="new-comment"
                   value={newComment}
                   onChange={(e) => setNewComment(e.target.value)}
                   rows={3}
                   maxLength={5000}
-                  className="flex w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
                   placeholder="Nội dung…"
                 />
                 <Button type="submit" size="sm" disabled={posting || !newComment.trim()}>
@@ -446,11 +471,10 @@ export default function IssueDetailPage() {
                     </div>
                     {editingCommentId === c.id ? (
                       <div className="mt-2 space-y-2">
-                        <textarea
+                        <Textarea
                           value={editCommentText}
                           onChange={(e) => setEditCommentText(e.target.value)}
                           rows={2}
-                          className="flex w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
                         />
                         <div className="flex gap-2">
                           <Button size="sm" onClick={() => void handleSaveEditComment(c.id)}>Lưu</Button>
@@ -462,13 +486,12 @@ export default function IssueDetailPage() {
                     )}
                     {replyOpenForId === c.id && (
                       <form onSubmit={(e) => void handlePostReply(e, c.id)} className="mt-3 space-y-2 border-l-2 border-border pl-3">
-                        <textarea
+                        <Textarea
                           value={replyDraft}
                           onChange={(e) => setReplyDraft(e.target.value)}
                           rows={2}
                           maxLength={5000}
                           placeholder="Trả lời…"
-                          className="flex w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
                         />
                         <Button type="submit" size="sm" disabled={postingReply || !replyDraft.trim()}>
                           {postingReply ? "Đang gửi…" : "Gửi trả lời"}
@@ -492,11 +515,10 @@ export default function IssueDetailPage() {
                             </div>
                             {editingCommentId === r.id ? (
                               <div className="mt-2 space-y-2">
-                                <textarea
+                                <Textarea
                                   value={editCommentText}
                                   onChange={(e) => setEditCommentText(e.target.value)}
                                   rows={2}
-                                  className="flex w-full rounded-md border border-border bg-background px-3 py-2 text-sm"
                                 />
                                 <div className="flex gap-2">
                                   <Button size="sm" onClick={() => void handleSaveEditComment(r.id)}>Lưu</Button>
@@ -514,28 +536,37 @@ export default function IssueDetailPage() {
                 ))}
               </ul>
               {comments.length === 0 && <p className="text-sm text-muted-foreground">Chưa có bình luận.</p>}
+              </CardContent>
             </Card>
           </div>
 
           <div className="space-y-6">
-            <Card className="p-4">
-              <h3 className="font-semibold text-sm mb-3">Sprint</h3>
-              <select
-                value={issueSprintId || ""}
-                onChange={(e) => void handleSprintChange(e.target.value)}
-                className="flex h-9 w-full rounded-md border border-border bg-background px-3 text-sm"
-              >
-                <option value="">— Backlog (Không có Sprint) —</option>
-                {sprints.map((s) => (
-                  <option key={s.id} value={s.id}>
-                    {s.name} ({s.status})
-                  </option>
-                ))}
-              </select>
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm">Sprint</CardTitle>
+              </CardHeader>
+              <CardContent>
+              <Select value={issueSprintId || "backlog"} onValueChange={(v) => handleSprintChange(v === "backlog" ? "" : (v || ""))}>
+                <SelectTrigger>
+                  <SelectValue placeholder="— Backlog (Không có Sprint) —" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="backlog">— Backlog (Không có Sprint) —</SelectItem>
+                  {sprints.map((s) => (
+                    <SelectItem key={s.id} value={s.id}>
+                      {s.name} ({s.status})
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+              </CardContent>
             </Card>
 
-            <Card className="p-4">
-              <h3 className="font-semibold text-sm mb-3">Nhãn (Labels)</h3>
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm">Nhãn (Labels)</CardTitle>
+              </CardHeader>
+              <CardContent>
               <div className="space-y-2 max-h-48 overflow-y-auto">
                 {projectLabels.length === 0 ? (
                   <p className="text-xs text-muted-foreground">Project chưa có nhãn.</p>
@@ -548,7 +579,7 @@ export default function IssueDetailPage() {
                           type="checkbox"
                           checked={hasLabel}
                           onChange={() => void handleToggleLabel(l.id, hasLabel)}
-                          className="rounded border-border text-primary focus:ring-primary"
+                          className="rounded border-border text-primary focus:ring-primary h-4 w-4"
                         />
                         <span className="w-3 h-3 rounded-full" style={{ backgroundColor: l.color }} />
                         {l.name}
@@ -557,10 +588,14 @@ export default function IssueDetailPage() {
                   })
                 )}
               </div>
+              </CardContent>
             </Card>
 
-            <Card className="p-4">
-              <h3 className="font-semibold text-sm mb-3">Đính kèm</h3>
+            <Card>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-sm">Đính kèm</CardTitle>
+              </CardHeader>
+              <CardContent>
               <div className="space-y-3">
                 <label className="block">
                   <span className="sr-only">Chọn file</span>
@@ -587,6 +622,7 @@ export default function IssueDetailPage() {
                 </ul>
                 {attachments.length === 0 && <p className="text-xs text-muted-foreground">Chưa có file nào.</p>}
               </div>
+              </CardContent>
             </Card>
           </div>
         </div>

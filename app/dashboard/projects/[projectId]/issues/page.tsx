@@ -89,7 +89,7 @@ export default function ProjectIssuesListPage() {
             <Button size="sm" variant="outline">Board</Button>
           </Link>
           <Link href={`/dashboard/projects/${projectId}/issues/new`}>
-            <Button size="sm" variant="primary">Tạo issue</Button>
+            <Button size="sm" variant="default">Tạo issue</Button>
           </Link>
         </div>
       </div>

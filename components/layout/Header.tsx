@@ -3,7 +3,9 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Button, Dropdown, DropdownItem } from "@/components/ui";
+import { Button } from "@/components/ui/button";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuLabel, DropdownMenuSeparator, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { displayInitials, getUserProfile, type StoredUserProfile } from "@/lib/auth-profile";
 import { resolvePublicFileUrl } from "@/lib/api-origin";
 import { logoutAndClear } from "@/lib/api";
@@ -58,7 +60,7 @@ export function Header({ title }: { title?: string }) {
   }
 
   return (
-    <header className="h-16 bg-background border-b border-border flex items-center justify-between px-6 shrink-0 sticky top-0 z-40 shadow-sm">
+    <header className="h-16 flex items-center justify-between px-6 shrink-0 sticky top-0 z-40 bg-card/90 backdrop-blur-md shadow-[0_4px_20px_rgba(0,0,0,0.02)]">
       <div className="flex items-center gap-4">
         {/* Mobile menu button could go here */}
         <h2 className="text-lg font-semibold text-foreground hidden sm:block capitalize">
@@ -87,53 +89,38 @@ export function Header({ title }: { title?: string }) {
           </Button>
         </Link>
 
-        <Dropdown
-          trigger={
-            <button className="flex items-center gap-2 hover:bg-muted p-1 pr-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-ring" aria-haspopup="menu">
-              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-medium text-sm border border-primary/20 overflow-hidden shrink-0">
-                {avatarSrc ? (
-                  <img src={avatarSrc} alt="" className="w-full h-full object-cover" />
-                ) : (
-                  avatarInitial
-                )}
+        <DropdownMenu>
+          <DropdownMenuTrigger className="flex items-center gap-2 hover:bg-black/5 p-1 pr-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-ring">
+            <Avatar className="h-8 w-8 border border-black/5">
+              <AvatarImage src={avatarSrc || undefined} alt={displayName} />
+              <AvatarFallback className="bg-primary/10 text-primary font-medium text-sm">{avatarInitial}</AvatarFallback>
+            </Avatar>
+            <span className="text-sm font-medium text-foreground hidden sm:block">{displayName}</span>
+            <ChevronDownIcon className="w-4 h-4 text-muted-foreground hidden sm:block" />
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            <DropdownMenuLabel className="font-normal">
+              <div className="flex flex-col space-y-1">
+                <p className="text-sm font-medium leading-none">{displayName}</p>
+                <p className="text-xs leading-none text-muted-foreground">{displayEmail}</p>
               </div>
-              <span className="text-sm font-medium text-foreground hidden sm:block">{displayName}</span>
-              <ChevronDownIcon className="w-4 h-4 text-muted-foreground hidden sm:block" />
-            </button>
-          }
-          align="right"
-          contentClassName="min-w-[220px]"
-        >
-          <div className="px-4 py-3 border-b border-border">
-            <p className="text-sm font-medium text-foreground">{displayName}</p>
-            <p className="text-xs text-muted-foreground mt-0.5">{displayEmail}</p>
-          </div>
-          <div className="py-1 flex flex-col">
-            <DropdownItem>
-              <Link href="/dashboard/profile" className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors">
-                <UserIcon className="w-4 h-4 shrink-0 text-muted-foreground" />
-                <span>Profile</span>
-              </Link>
-            </DropdownItem>
-            <DropdownItem>
-              <Link href="/dashboard/profile" className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-foreground hover:bg-muted transition-colors">
-                <GearIcon className="w-4 h-4 shrink-0 text-muted-foreground" />
-                <span>Settings</span>
-              </Link>
-            </DropdownItem>
-            <div className="h-px bg-border my-1" />
-            <DropdownItem>
-              <button
-                type="button"
-                onClick={() => void handleLogout()}
-                className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-destructive hover:bg-destructive/10 transition-colors text-left"
-              >
-                <LogoutIcon className="w-4 h-4 shrink-0" />
-                <span>Logout</span>
-              </button>
-            </DropdownItem>
-          </div>
-        </Dropdown>
+            </DropdownMenuLabel>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem className="cursor-pointer" onClick={() => router.push("/dashboard/profile")}>
+              <UserIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+              <span>Profile</span>
+            </DropdownMenuItem>
+            <DropdownMenuItem className="cursor-pointer" onClick={() => router.push("/dashboard/profile")}>
+              <GearIcon className="mr-2 h-4 w-4 text-muted-foreground" />
+              <span>Settings</span>
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={() => void handleLogout()} className="cursor-pointer text-destructive focus:text-destructive focus:bg-destructive/10">
+              <LogoutIcon className="mr-2 h-4 w-4" />
+              <span>Logout</span>
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
     </header>
   );

@@ -5,8 +5,8 @@ import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { useState, useEffect } from "react";
 
-const activeLink = "bg-primary/10 text-primary font-medium";
-const inactiveLink = "text-muted-foreground hover:bg-muted hover:text-foreground";
+const activeLink = "bg-white text-black font-medium rounded-xl";
+const inactiveLink = "text-white/70 hover:bg-white/10 hover:text-white rounded-xl";
 
 export interface NavItem {
   href: string;
@@ -76,7 +76,7 @@ function NavItemComponent({ item, pathname }: { item: NavItem; pathname: string 
               transition={{ duration: 0.2 }}
               className="overflow-hidden"
             >
-              <div className="ml-6 mt-1 flex flex-col gap-1 border-l border-border pl-2">
+              <div className="ml-6 mt-1 flex flex-col gap-1 pl-2">
                 {item.children.map((sub) => {
                   const isSubActive = pathname === sub.href;
                   return (
@@ -90,7 +90,7 @@ function NavItemComponent({ item, pathname }: { item: NavItem; pathname: string 
                       {isSubActive && (
                         <motion.div
                           layoutId="activeSubNav"
-                          className="absolute left-[-9px] top-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-primary"
+                          className="absolute left-[-9px] top-1/2 -translate-y-1/2 w-1 h-1 rounded-full bg-white"
                         />
                       )}
                       {sub.label}
@@ -113,12 +113,6 @@ function NavItemComponent({ item, pathname }: { item: NavItem; pathname: string 
         isActive ? activeLink : inactiveLink
       }`}
     >
-      {isActive && (
-        <motion.div
-          layoutId="activeNav"
-          className="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-primary rounded-r-full"
-        />
-      )}
       {item.icon && <item.icon className="w-5 h-5 shrink-0" />}
       <span>{item.label}</span>
     </Link>

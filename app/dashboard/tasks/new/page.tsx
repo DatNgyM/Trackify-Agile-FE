@@ -136,8 +136,8 @@ function CreateIssueFromTasksInner() {
           </div>
 
           <div className="space-y-2">
-            <Label htmlFor="issue-title" required>
-              Tiêu đề
+            <Label htmlFor="issue-title">
+              Tiêu đề <span className="text-destructive">*</span>
             </Label>
             <Input
               id="issue-title"

@@ -50,7 +50,7 @@ export default function DashboardLayout({
   };
 
   return (
-    <div className="h-screen flex overflow-hidden bg-muted/30">
+    <div className="h-screen flex overflow-hidden bg-background-subtle">
       <Sidebar items={navItems} />
       <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
         <Header title={getPageTitle()} />
