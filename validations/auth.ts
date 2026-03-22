@@ -1,14 +1,26 @@
 import { z } from "zod";
 
+/** Khớp backend / fe-context: min 8, 1 hoa, 1 thường, 1 số, 1 ký tự @#$%^&*! */
+const registerPasswordRegex =
+  /^(?=.*[A-Z])(?=.*[a-z])(?=.*\d)(?=.*[@#$%^&*!]).{8,}$/;
+
 export const loginSchema = z.object({
   email: z.string().email("Email không hợp lệ"),
   password: z.string().min(1, "Nhập mật khẩu"),
 });
 
 export const registerSchema = z.object({
-  name: z.string().min(1, "Nhập tên"),
+  fullName: z
+    .string()
+    .min(1, "Nhập họ tên")
+    .max(100, "Tối đa 100 ký tự"),
   email: z.string().email("Email không hợp lệ"),
-  password: z.string().min(6, "Mật khẩu tối thiểu 6 ký tự"),
+  password: z
+    .string()
+    .regex(
+      registerPasswordRegex,
+      "Mật khẩu tối thiểu 8 ký tự, gồm chữ hoa, chữ thường, số và một ký tự @#$%^&*!"
+    ),
 });
 
 export type LoginInput = z.infer<typeof loginSchema>;

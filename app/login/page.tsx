@@ -6,10 +6,9 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
-import Image from "next/image";
 import { Button, Input, Label } from "@/components/ui";
 import { loginSchema, type LoginInput } from "@/validations/auth";
-import { authApi } from "@/lib/api";
+import { getApiErrorMessage, loginAndStoreTokens } from "@/lib/api";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -42,22 +41,13 @@ export default function LoginPage() {
 
   const onSubmit = async (data: LoginInput) => {
     setSubmitError(null);
+    const email = data.email.trim().toLowerCase();
     try {
-      const res = await authApi.login(data.email, data.password);
-      const token = res.data?.token;
-      if (token && typeof window !== "undefined") {
-        localStorage.setItem("token", token);
-        router.push("/dashboard");
-        router.refresh();
-        return;
-      }
-      setSubmitError("Đăng nhập thất bại.");
+      await loginAndStoreTokens(email, data.password);
+      router.push("/dashboard");
+      router.refresh();
     } catch (err: unknown) {
-      const msg =
-        err && typeof err === "object" && "response" in err
-          ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
-          : null;
-      setSubmitError(msg ?? "Email hoặc mật khẩu không đúng.");
+      setSubmitError(getApiErrorMessage(err, "Email hoặc mật khẩu không đúng."));
     }
   };
 
@@ -162,13 +152,10 @@ export default function LoginPage() {
       >
         <div className="relative w-full h-full min-h-[500px]">
           {!imgError ? (
-            <Image
+            <img
               src="/hero-image.png"
               alt="Laptop with code editor"
-              fill
-              className="object-cover object-center"
-              priority
-              sizes="50vw"
+              className="absolute inset-0 h-full w-full object-cover object-center"
               onError={() => setImgError(true)}
             />
           ) : null}

@@ -1,9 +1,62 @@
 "use client";
 
 import Link from "next/link";
+import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
 import { Button, Dropdown, DropdownItem } from "@/components/ui";
+import { displayInitials, getUserProfile, type StoredUserProfile } from "@/lib/auth-profile";
+import { resolvePublicFileUrl } from "@/lib/api-origin";
+import { logoutAndClear } from "@/lib/api";
+import { fetchUnreadNotificationCount } from "@/lib/projects-issues-api";
+import { isNestBackendConfigured } from "@/lib/aggregate-my-dashboard";
+import { getAccessToken } from "@/lib/auth-tokens";
 
 export function Header({ title }: { title?: string }) {
+  const router = useRouter();
+  const [profile, setProfile] = useState<StoredUserProfile | null>(null);
+  const [unreadNotifications, setUnreadNotifications] = useState<number | null>(null);
+
+  useEffect(() => {
+    const sync = () => setProfile(getUserProfile());
+    sync();
+    window.addEventListener("trackify-profile-changed", sync);
+    return () => window.removeEventListener("trackify-profile-changed", sync);
+  }, []);
+
+  useEffect(() => {
+    if (!isNestBackendConfigured() || typeof window === "undefined" || !getAccessToken()) {
+      setUnreadNotifications(null);
+      return;
+    }
+    let cancelled = false;
+    const tick = () => {
+      void (async () => {
+        try {
+          const n = await fetchUnreadNotificationCount();
+          if (!cancelled) setUnreadNotifications(n);
+        } catch {
+          if (!cancelled) setUnreadNotifications(null);
+        }
+      })();
+    };
+    tick();
+    const id = window.setInterval(tick, 60_000);
+    return () => {
+      cancelled = true;
+      window.clearInterval(id);
+    };
+  }, [profile?.email]);
+
+  const displayName = profile?.fullName ?? "User";
+  const displayEmail = profile?.email ?? "";
+  const avatarInitial = profile ? displayInitials(profile.fullName) : "?";
+  const avatarSrc = profile ? resolvePublicFileUrl(profile.avatarUrl ?? null) : null;
+
+  async function handleLogout() {
+    await logoutAndClear();
+    router.push("/login");
+  }
+
   return (
     <header className="h-16 bg-background border-b border-border flex items-center justify-between px-6 shrink-0 sticky top-0 z-40 shadow-sm">
       <div className="flex items-center gap-4">
@@ -14,18 +67,37 @@ export function Header({ title }: { title?: string }) {
       </div>
 
       <div className="flex items-center gap-4">
-        <Button variant="ghost" size="icon" className="relative text-muted-foreground hover:text-foreground">
-          <BellIcon className="w-5 h-5" />
-          <span className="absolute top-2 right-2 w-2 h-2 bg-destructive rounded-full border-2 border-background" />
-        </Button>
+        <Link href="/dashboard/notifications">
+          <Button
+            variant="ghost"
+            size="icon"
+            className="relative text-muted-foreground hover:text-foreground"
+            aria-label={
+              unreadNotifications != null && unreadNotifications > 0
+                ? `${unreadNotifications} thông báo chưa đọc`
+                : "Thông báo"
+            }
+          >
+            <BellIcon className="w-5 h-5" />
+            {unreadNotifications != null && unreadNotifications > 0 && (
+              <span className="absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] px-1 flex items-center justify-center rounded-full bg-destructive text-[10px] font-semibold text-destructive-foreground border-2 border-background">
+                {unreadNotifications > 99 ? "99+" : unreadNotifications}
+              </span>
+            )}
+          </Button>
+        </Link>
 
         <Dropdown
           trigger={
             <button className="flex items-center gap-2 hover:bg-muted p-1 pr-2 rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-ring" aria-haspopup="menu">
-              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-medium text-sm border border-primary/20">
-                J
+              <div className="w-8 h-8 rounded-full bg-primary/10 text-primary flex items-center justify-center font-medium text-sm border border-primary/20 overflow-hidden shrink-0">
+                {avatarSrc ? (
+                  <img src={avatarSrc} alt="" className="w-full h-full object-cover" />
+                ) : (
+                  avatarInitial
+                )}
               </div>
-              <span className="text-sm font-medium text-foreground hidden sm:block">Jecica</span>
+              <span className="text-sm font-medium text-foreground hidden sm:block">{displayName}</span>
               <ChevronDownIcon className="w-4 h-4 text-muted-foreground hidden sm:block" />
             </button>
           }
@@ -33,8 +105,8 @@ export function Header({ title }: { title?: string }) {
           contentClassName="min-w-[220px]"
         >
           <div className="px-4 py-3 border-b border-border">
-            <p className="text-sm font-medium text-foreground">Jecica</p>
-            <p className="text-xs text-muted-foreground mt-0.5">email@example.com</p>
+            <p className="text-sm font-medium text-foreground">{displayName}</p>
+            <p className="text-xs text-muted-foreground mt-0.5">{displayEmail}</p>
           </div>
           <div className="py-1 flex flex-col">
             <DropdownItem>
@@ -51,10 +123,14 @@ export function Header({ title }: { title?: string }) {
             </DropdownItem>
             <div className="h-px bg-border my-1" />
             <DropdownItem>
-              <Link href="/login" className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-destructive hover:bg-destructive/10 transition-colors">
+              <button
+                type="button"
+                onClick={() => void handleLogout()}
+                className="flex items-center gap-3 w-full px-4 py-2.5 text-sm text-destructive hover:bg-destructive/10 transition-colors text-left"
+              >
                 <LogoutIcon className="w-4 h-4 shrink-0" />
                 <span>Logout</span>
-              </Link>
+              </button>
             </DropdownItem>
           </div>
         </Dropdown>

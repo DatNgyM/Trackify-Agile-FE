@@ -5,24 +5,47 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { Button, Card, Input, Label } from "@/components/ui";
-
-const mockParentProjects = [
-  { id: "", name: "— Không (project gốc) —" },
-  { id: "proj-1", name: "E-commerce App" },
-  { id: "proj-4", name: "Trackify Agile" },
-];
+import { getApiErrorMessage } from "@/lib/api";
+import { createProject } from "@/lib/projects-issues-api";
+import { isNestBackendConfigured } from "@/lib/aggregate-my-dashboard";
 
 export default function CreateProjectPage() {
   const router = useRouter();
   const [name, setName] = React.useState("");
+  const [key, setKey] = React.useState("");
   const [description, setDescription] = React.useState("");
-  const [parentProjectId, setParentProjectId] = React.useState("");
+  const [submitting, setSubmitting] = React.useState(false);
+  const [error, setError] = React.useState<string | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // BE sẽ nhận: name, description, parentProjectId (optional)
-    console.log({ name, description, parentProjectId: parentProjectId || null });
-    router.push("/dashboard/projects");
+    setError(null);
+    if (!isNestBackendConfigured()) {
+      setError("Cần NEXT_PUBLIC_API_URL trỏ Nest (vd: http://localhost:4000/api).");
+      return;
+    }
+    const normalizedKey = key.trim().toUpperCase();
+    if (normalizedKey.length < 2 || normalizedKey.length > 10) {
+      setError("Key: 2–10 ký tự, bắt đầu bằng chữ cái, chỉ chữ in hoa và số.");
+      return;
+    }
+    if (!/^[A-Z][A-Z0-9]*$/.test(normalizedKey)) {
+      setError("Key phải bắt đầu bằng chữ cái và chỉ gồm chữ in hoa, số.");
+      return;
+    }
+    setSubmitting(true);
+    try {
+      const project = await createProject({
+        name: name.trim(),
+        key: normalizedKey,
+        description: description.trim() || undefined,
+      });
+      router.push(`/dashboard/projects/${project.id}/board`);
+    } catch (err) {
+      setError(getApiErrorMessage(err, "Không tạo được project."));
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -41,17 +64,45 @@ export default function CreateProjectPage() {
           <h1 className="text-xl font-semibold text-foreground">Tạo project mới</h1>
         </div>
 
-        <form onSubmit={handleSubmit} className="space-y-5">
+        {error && (
+          <p className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg px-3 py-2 mb-4">
+            {error}
+          </p>
+        )}
+
+        <form onSubmit={(e) => void handleSubmit(e)} className="space-y-5">
           <div className="space-y-2">
-            <Label htmlFor="project-name" required>Tên project</Label>
+            <Label htmlFor="project-name" required>
+              Tên project
+            </Label>
             <Input
               id="project-name"
               name="name"
               value={name}
               onChange={(e) => setName(e.target.value)}
-              placeholder="Nhập tên project"
+              placeholder="Ví dụ: Trackify Agile"
               required
+              maxLength={100}
             />
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="project-key" required>
+              Key (mã viết tắt)
+            </Label>
+            <Input
+              id="project-key"
+              name="key"
+              value={key}
+              onChange={(e) => setKey(e.target.value.toUpperCase())}
+              placeholder="VD: TRK"
+              required
+              maxLength={10}
+              className="font-mono"
+            />
+            <p className="text-xs text-muted-foreground">
+              Dùng cho issue key (TRK-1, TRK-2). 2–10 ký tự, bắt đầu bằng chữ cái.
+            </p>
           </div>
 
           <div className="space-y-2">
@@ -61,31 +112,21 @@ export default function CreateProjectPage() {
               name="description"
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="Mô tả ngắn (tùy chọn)"
+              placeholder="Tùy chọn, tối đa 500 ký tự"
               rows={3}
+              maxLength={500}
               className="flex w-full rounded-md border border-border bg-background px-3 py-2 text-sm placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:opacity-50"
             />
           </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="project-parent">Project cha (tùy chọn)</Label>
-            <select
-              id="project-parent"
-              name="parentProjectId"
-              value={parentProjectId}
-              onChange={(e) => setParentProjectId(e.target.value)}
-              className="flex h-9 w-full rounded-md border border-border bg-background px-3 py-1 text-sm focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
-            >
-              {mockParentProjects.map((p) => (
-                <option key={p.id || "root"} value={p.id}>{p.name}</option>
-              ))}
-            </select>
-          </div>
-
           <div className="flex gap-3 pt-2">
-            <Button type="submit">Tạo project</Button>
+            <Button type="submit" disabled={submitting}>
+              {submitting ? "Đang tạo…" : "Tạo project"}
+            </Button>
             <Link href="/dashboard/projects">
-              <Button type="button" variant="outline">Hủy</Button>
+              <Button type="button" variant="outline">
+                Hủy
+              </Button>
             </Link>
           </div>
         </form>

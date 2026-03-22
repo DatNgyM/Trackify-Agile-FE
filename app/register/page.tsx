@@ -6,10 +6,9 @@ import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
-import Image from "next/image";
 import { Button, Input, Label } from "@/components/ui";
 import { registerSchema, type RegisterInput } from "@/validations/auth";
-import { authApi } from "@/lib/api";
+import { getApiErrorMessage, loginAndStoreTokens, registerUser } from "@/lib/api";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -34,27 +33,19 @@ export default function RegisterPage() {
     formState: { errors, isSubmitting },
   } = useForm<RegisterInput>({
     resolver: zodResolver(registerSchema),
-    defaultValues: { name: "", email: "", password: "" },
+    defaultValues: { fullName: "", email: "", password: "" },
   });
 
   const onSubmit = async (data: RegisterInput) => {
     setSubmitError(null);
+    const email = data.email.trim().toLowerCase();
     try {
-      const res = await authApi.register(data.name, data.email, data.password);
-      const token = res.data?.token;
-      if (token && typeof window !== "undefined") {
-        localStorage.setItem("token", token);
-        router.push("/dashboard");
-        router.refresh();
-        return;
-      }
-      setSubmitError("Đăng ký thất bại.");
+      await registerUser(data.fullName.trim(), email, data.password);
+      await loginAndStoreTokens(email, data.password);
+      router.push("/dashboard");
+      router.refresh();
     } catch (err: unknown) {
-      const msg =
-        err && typeof err === "object" && "response" in err
-          ? (err as { response?: { data?: { message?: string } } }).response?.data?.message
-          : null;
-      setSubmitError(msg ?? "Đăng ký thất bại.");
+      setSubmitError(getApiErrorMessage(err, "Đăng ký thất bại."));
     }
   };
 
@@ -73,14 +64,14 @@ export default function RegisterPage() {
 
           <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-3 w-full">
             <motion.div variants={fadeInUp} className="space-y-2">
-              <Label htmlFor="register-name">Họ tên</Label>
+              <Label htmlFor="register-fullName">Họ tên</Label>
               <Input
-                id="register-name"
+                id="register-fullName"
                 type="text"
                 placeholder="Họ tên"
                 className="h-12 rounded-xl"
-                error={errors.name?.message}
-                {...register("name")}
+                error={errors.fullName?.message}
+                {...register("fullName")}
               />
             </motion.div>
             <motion.div variants={fadeInUp} className="space-y-2">
@@ -99,7 +90,7 @@ export default function RegisterPage() {
               <Input
                 id="register-password"
                 type="password"
-                placeholder="Mật khẩu (tối thiểu 6 ký tự)"
+                placeholder="Mật khẩu (tối thiểu 8 ký tự, theo yêu cầu BE)"
                 className="h-12 rounded-xl"
                 error={errors.password?.message}
                 {...register("password")}
@@ -141,13 +132,10 @@ export default function RegisterPage() {
       >
         <div className="relative w-full h-full min-h-[500px]">
           {!imgError ? (
-            <Image
+            <img
               src="/hero-image.png"
               alt="Laptop with code editor"
-              fill
-              className="object-cover object-center"
-              priority
-              sizes="50vw"
+              className="absolute inset-0 h-full w-full object-cover object-center"
               onError={() => setImgError(true)}
             />
           ) : null}

@@ -3,7 +3,6 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import Image from "next/image";
 import { Button, Input, Label } from "@/components/ui";
 
 const fadeInUp = {
@@ -115,13 +114,11 @@ export default function SignUpPage() {
       >
         <div className="relative w-full h-full min-h-[500px]">
           {!imgError ? (
-            <Image
+            // Không dùng next/image: file thiếu gây 400 từ optimizer
+            <img
               src="/hero-image.png"
               alt="Laptop with code editor"
-              fill
-              className="object-cover object-center"
-              priority
-              sizes="50vw"
+              className="absolute inset-0 h-full w-full object-cover object-center"
               onError={() => setImgError(true)}
             />
           ) : null}
