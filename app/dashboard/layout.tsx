@@ -1,32 +1,31 @@
 "use client";
 
-import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { motion } from "framer-motion";
+import { Header, Sidebar } from "@/components/layout";
 
 const navItems = [
   { href: "/dashboard", label: "Home", icon: HomeIcon },
   {
     href: "/dashboard/projects",
-    label: "Project",
+    label: "Projects",
     icon: ProjectIcon,
     children: [
-      { href: "/dashboard/projects", label: "Project list" },
-      { href: "/dashboard/projects/board", label: "Project Board" },
-      { href: "/dashboard/projects/settings", label: "Project Settings" },
+      { href: "/dashboard/projects", label: "Danh sách project" },
+      { href: "/dashboard/projects/new", label: "Tạo project" },
     ],
   },
   {
     href: "/dashboard/tasks",
-    label: "Task",
+    label: "Issues",
     icon: TaskIcon,
     children: [
-      { href: "/dashboard/tasks", label: "My Tasks List" },
-      { href: "/dashboard/tasks/new", label: "Create New Tasks" },
-      { href: "/dashboard/tasks/detail", label: "Task Detail" },
+      { href: "/dashboard/tasks", label: "Được gán cho tôi" },
+      { href: "/dashboard/tasks/new", label: "Tạo issue" },
     ],
   },
-  { href: "/dashboard/cicd", label: "CI/CD", icon: CicdIcon },
-  { href: "/dashboard/profile", label: "User Profile", icon: UserIcon },
+  { href: "/dashboard/notifications", label: "Notifications", icon: BellIcon },
+  { href: "/dashboard/profile", label: "Profile", icon: UserIcon },
 ];
 
 export default function DashboardLayout({
@@ -36,77 +35,37 @@ export default function DashboardLayout({
 }) {
   const pathname = usePathname();
 
+  const getPageTitle = () => {
+    if (pathname === "/dashboard") return "Home";
+    const segments = pathname.split("/").filter(Boolean);
+    if (segments.length > 1) {
+      const title = segments[1];
+      if (title === "projects") return "Projects";
+      if (title === "tasks") return "Issues";
+      if (title === "notifications") return "Notifications";
+      if (title === "profile") return "Profile";
+      return title;
+    }
+    return "Dashboard";
+  };
+
   return (
-    <div className="min-h-screen flex bg-muted">
-      <aside className="w-56 shrink-0 bg-background rounded-2xl m-4 flex flex-col py-6 shadow-md">
-        <nav className="flex flex-col gap-1 px-3 flex-1">
-          {navItems.map((item) => {
-            const isParentActive = pathname === item.href || (item.children && pathname.startsWith(item.href + "/"));
-            if (item.children) {
-              return (
-                <div key={item.href}>
-                  <Link
-                    href={item.href}
-                    className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
-                      isParentActive ? "bg-primary-muted text-primary font-medium" : "text-muted-foreground hover:bg-muted"
-                    }`}
-                  >
-                    <item.icon className="w-5 h-5 shrink-0" />
-                    <span>{item.label}</span>
-                  </Link>
-                  <div className="ml-6 mt-0.5 flex flex-col gap-0.5">
-                    {item.children.map((sub) => {
-                      const isSubActive = pathname === sub.href;
-                      return (
-                        <Link
-                          key={sub.href}
-                          href={sub.href}
-                          className={`px-3 py-2 rounded-lg text-sm transition-colors ${
-                            isSubActive
-                              ? "bg-primary-muted text-primary font-medium"
-                              : "text-muted-foreground hover:bg-muted"
-                          }`}
-                        >
-                          {sub.label}
-                        </Link>
-                      );
-                    })}
-                  </div>
-                </div>
-              );
-            }
-            const isActive = pathname === item.href;
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={`flex items-center gap-3 px-4 py-3 rounded-xl transition-colors ${
-                  isActive
-                    ? "bg-primary-muted text-primary font-medium"
-                    : "text-muted-foreground hover:bg-muted"
-                }`}
-              >
-                <item.icon className="w-5 h-5 shrink-0" />
-                <span>{item.label}</span>
-              </Link>
-            );
-          })}
-        </nav>
-        {pathname === "/dashboard" && (
-          <div className="px-3 pt-4 mt-auto border-t border-border">
-            <Link
-              href="/login"
-              className="flex items-center gap-3 px-4 py-3 rounded-xl text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
-            >
-              <LogoutIcon className="w-5 h-5 shrink-0" />
-              <span>Logout</span>
-            </Link>
-          </div>
-        )}
-      </aside>
-      <main className="flex-1 rounded-2xl m-4 p-6 bg-background shadow-md overflow-auto">
-        {children}
-      </main>
+    <div className="h-screen flex overflow-hidden bg-background-subtle">
+      <Sidebar items={navItems} />
+      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+        <Header title={getPageTitle()} />
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 relative">
+          <motion.div
+            key={pathname}
+            initial={{ opacity: 0, y: 8 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.2, ease: "easeOut" }}
+            className="max-w-7xl mx-auto h-auto min-h-full"
+          >
+            {children}
+          </motion.div>
+        </main>
+      </div>
     </div>
   );
 }
@@ -135,14 +94,6 @@ function TaskIcon({ className }: { className?: string }) {
   );
 }
 
-function CicdIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M14.25 6.087c0-.355.186-.676.401-.959.221-.29.349-.634.349-1.003 0-1.036-1.007-1.875-2.25-1.875s-2.25.84-2.25 1.875c0 .369.128.713.349 1.003.215.283.401.604.401.959v0a.64.64 0 01-.657.643 48.39 48.39 0 01-4.163-.3c.186 1.613.293 3.25.315 4.907a.656.656 0 01-.658.663v0c-.355 0-.676-.186-.959-.401a1.647 1.647 0 00-1.003-.349c-1.036 0-1.875 1.007-1.875 2.25s.84 2.25 1.875 2.25c.369 0 .713-.128 1.003-.349.283-.215.604-.401.959-.401v0c.31 0 .555.26.532.57a48.039 48.039 0 01-.642 5.056c1.518.19 3.058.309 4.616.354a.64.64 0 00.657-.643v0c0-.355-.186-.676-.401-.959a1.647 1.647 0 01-.349-1.003c0-1.035 1.008-1.875 2.25-1.875 1.243 0 2.25.84 2.25 1.875 0 .369-.128.713-.349 1.003-.215.283-.4.604-.4.959v0c0 .333.277.599.61.58a48.1 48.1 0 005.427-.63 48.05 48.05 0 00.582-4.717.532.532 0 00-.533-.57v0z" />
-    </svg>
-  );
-}
-
 function UserIcon({ className }: { className?: string }) {
   return (
     <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
@@ -151,10 +102,10 @@ function UserIcon({ className }: { className?: string }) {
   );
 }
 
-function LogoutIcon({ className }: { className?: string }) {
+function BellIcon({ className }: { className?: string }) {
   return (
     <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v3.75M15.75 9L12 12.75m0 0L8.25 9m3.75 3.75V21" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
     </svg>
   );
 }

@@ -18,12 +18,14 @@ Xem [docs/STRUCTURE.md](docs/STRUCTURE.md) để biết cách tổ chức `app/`
 ```bash
 npm install
 cp .env.example .env.local   # rồi sửa DATABASE_URL nếu dùng DB
-npm run docker:up             # PostgreSQL (tùy chọn)
+npm run docker:up             # PostgreSQL tùy chọn (:5432) — không chạy cùng lúc postgres-app infra nếu cùng cổng
 npm run db:generate           # sinh Prisma client
-npm run dev
+npm run dev              # Next mặc định (port 3000)
+# hoặc
+npm run start:dev        # port 3001 — Next :3000; Nest backend mặc định :4000
 ```
 
-Mở [http://localhost:3000](http://localhost:3000).
+Mở [http://localhost:3000](http://localhost:3000) (hoặc [http://localhost:3001](http://localhost:3001) nếu dùng `npm run start:dev`).
 
 ## Hình ảnh bên phải
 

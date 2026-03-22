@@ -1,3 +1,6 @@
+# Postgres tùy chọn cho Prisma trong repo FE (user postgres / DB trackify).
+# Host :5433 → tránh trùng với postgres-app của trackify-agile-infrastructure (thường :5432).
+# Cập nhật DATABASE_URL trong .env → localhost:5433 khi dùng compose này.
 services:
   postgres:
     image: postgres:16-alpine
@@ -8,7 +11,7 @@ services:
       POSTGRES_PASSWORD: postgres
       POSTGRES_DB: trackify
     ports:
-      - "5432:5432"
+      - "5433:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
