@@ -3,7 +3,7 @@
 import { useState } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
-import Image from "next/image";
+import { Button, Input, Label } from "@/components/ui";
 
 const fadeInUp = {
   initial: { opacity: 0, y: 20 },
@@ -40,67 +40,50 @@ export default function SignUpPage() {
           </motion.h1>
 
           <div className="flex flex-col gap-3">
-            <motion.button
-              type="button"
-              className="w-full flex items-center justify-center gap-2 h-12 rounded-xl border border-border bg-background text-foreground hover:bg-muted transition-colors"
-              variants={fadeInUp}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-            >
-              <UserIcon className="w-5 h-5" />
-            </motion.button>
-            <motion.button
-              type="button"
-              className="w-full flex items-center justify-center gap-2 h-12 rounded-xl border border-border bg-background text-foreground hover:bg-muted transition-colors"
-              variants={fadeInUp}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-            >
-              <GoogleIcon className="w-5 h-5" />
-            </motion.button>
-            <motion.button
-              type="button"
-              className="w-full flex items-center justify-center gap-2 h-12 rounded-xl border border-border bg-background text-foreground hover:bg-muted transition-colors"
-              variants={fadeInUp}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-            >
-              <FacebookIcon className="w-5 h-5" />
-            </motion.button>
+            <motion.div variants={fadeInUp}>
+              <Button variant="outline" className="w-full h-12 rounded-xl gap-2" type="button">
+                <UserIcon className="w-5 h-5" />
+                <span>Tiếp tục với Email</span>
+              </Button>
+            </motion.div>
+            <motion.div variants={fadeInUp}>
+              <Button variant="outline" className="w-full h-12 rounded-xl gap-2" type="button">
+                <GoogleIcon className="w-5 h-5" />
+                <span>Tiếp tục với Google</span>
+              </Button>
+            </motion.div>
+            <motion.div variants={fadeInUp}>
+              <Button variant="outline" className="w-full h-12 rounded-xl gap-2" type="button">
+                <FacebookIcon className="w-5 h-5" />
+                <span>Tiếp tục với Facebook</span>
+              </Button>
+            </motion.div>
           </div>
 
           <motion.div variants={fadeInUp} className="flex flex-col gap-3">
-            <input
-              type="text"
-              placeholder="Họ và tên"
-              className="w-full h-12 px-4 rounded-xl border border-border bg-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-            />
-            <input
-              type="email"
-              placeholder="Email"
-              className="w-full h-12 px-4 rounded-xl border border-border bg-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-            />
-            <input
-              type="password"
-              placeholder="Mật khẩu"
-              className="w-full h-12 px-4 rounded-xl border border-border bg-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-            />
-            <input
-              type="password"
-              placeholder="Xác nhận mật khẩu"
-              className="w-full h-12 px-4 rounded-xl border border-border bg-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent"
-            />
+            <div className="space-y-2">
+              <Label htmlFor="signup-name">Họ và tên</Label>
+              <Input id="signup-name" type="text" placeholder="Họ và tên" className="h-12 rounded-xl" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="signup-email">Email</Label>
+              <Input id="signup-email" type="email" placeholder="Email" className="h-12 rounded-xl" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="signup-password">Mật khẩu</Label>
+              <Input id="signup-password" type="password" placeholder="Mật khẩu" className="h-12 rounded-xl" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="signup-confirm">Xác nhận mật khẩu</Label>
+              <Input id="signup-confirm" type="password" placeholder="Xác nhận mật khẩu" className="h-12 rounded-xl" />
+            </div>
           </motion.div>
 
-          <motion.button
-            type="button"
-            className="w-full h-12 rounded-xl bg-primary text-primary-foreground font-medium hover:bg-primary-hover transition-colors shadow-sm"
-            variants={fadeInUp}
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.99 }}
-          >
-            Đăng ký
-          </motion.button>
+          <motion.div variants={fadeInUp}>
+            <Button type="button" className="w-full h-12 rounded-xl shadow-sm">
+              Đăng ký
+            </Button>
+          </motion.div>
 
           <motion.p
             className="text-xs text-muted-foreground text-center leading-relaxed"
@@ -131,13 +114,11 @@ export default function SignUpPage() {
       >
         <div className="relative w-full h-full min-h-[500px]">
           {!imgError ? (
-            <Image
+            // Không dùng next/image: file thiếu gây 400 từ optimizer
+            <img
               src="/hero-image.png"
               alt="Laptop with code editor"
-              fill
-              className="object-cover object-center"
-              priority
-              sizes="50vw"
+              className="absolute inset-0 h-full w-full object-cover object-center"
               onError={() => setImgError(true)}
             />
           ) : null}

@@ -1,134 +1,264 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useMemo, useCallback, Suspense } from "react";
+import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
 import { motion } from "framer-motion";
+import { Search, Plus, Inbox, CheckCircle2, CircleDashed } from "lucide-react";
+import { Button, Input, Card } from "@/components/ui";
+import { Badge } from "@/components/ui/badge";
+import { CardContent } from "@/components/ui/card";
+import { CreateIssueModal } from "@/components/tasks/CreateIssueModal";
+import { fetchMe, getApiErrorMessage } from "@/lib/api";
+import { fetchMyAssignedIssues, type AssignedIssueRow } from "@/lib/my-assigned-issues";
+import { isNestBackendConfigured } from "@/lib/aggregate-my-dashboard";
 
-const mockTasks = [
-  { id: "TSK-01", name: "Fix login bug", project: "E-commerce App", priority: "2m 15s", deadline: "Jan 25, 2026", status: "In Progress" },
-  { id: "TSK-02", name: "Fix login bug", project: "E-commerce App", priority: "2m 15s", deadline: "Jan 25, 2026", status: "In Progress" },
-  { id: "TSK-03", name: "Fix login bug", project: "E-commerce App", priority: "2m 15s", deadline: "Jan 25, 2026", status: "In Progress" },
-];
+type Filter = "All" | "Open" | "Done";
 
-type Filter = "All" | "To do" | "Done";
+function isDone(status: string) {
+  return status === "DONE" || status === "CANCELLED";
+}
 
-export default function MyTasksListPage() {
+function MyTasksListPageInner() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const createFromUrl = searchParams.get("create") === "1";
+  const projectIdFromUrl = searchParams.get("projectId") ?? "";
+  const [createOpenExtra, setCreateOpenExtra] = useState(false);
+  const createModalOpen = createFromUrl || createOpenExtra;
+
+  const handleCreateModalOpenChange = useCallback(
+    (open: boolean) => {
+      if (!open) {
+        setCreateOpenExtra(false);
+        if (searchParams.get("create") === "1") {
+          router.replace("/dashboard/tasks", { scroll: false });
+        }
+      }
+    },
+    [router, searchParams],
+  );
+
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState<Filter>("All");
+  const [rows, setRows] = useState<AssignedIssueRow[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const refreshRows = useCallback(async () => {
+    if (!isNestBackendConfigured()) return;
+    try {
+      const me = await fetchMe();
+      const list = await fetchMyAssignedIssues(me.id);
+      setRows(list);
+    } catch {
+      /* silent refresh */
+    }
+  }, []);
+
+  useEffect(() => {
+    if (!isNestBackendConfigured()) {
+      setLoading(false);
+      setError("Đặt NEXT_PUBLIC_API_URL trỏ Nest để xem issue được gán cho bạn.");
+      return;
+    }
+    let cancelled = false;
+    (async () => {
+      try {
+        const me = await fetchMe();
+        const list = await fetchMyAssignedIssues(me.id);
+        if (cancelled) return;
+        setRows(list);
+        setError(null);
+      } catch (e) {
+        if (!cancelled) setError(getApiErrorMessage(e, "Không tải được danh sách issue."));
+      } finally {
+        if (!cancelled) setLoading(false);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  const filtered = useMemo(() => {
+    let out = rows;
+    if (filter === "Open") out = out.filter((r) => !isDone(r.status));
+    if (filter === "Done") out = out.filter((r) => isDone(r.status));
+    const q = search.trim().toLowerCase();
+    if (q) {
+      out = out.filter(
+        (r) =>
+          r.title.toLowerCase().includes(q) ||
+          r.issueKey.toLowerCase().includes(q) ||
+          r.projectName.toLowerCase().includes(q),
+      );
+    }
+    return out;
+  }, [rows, filter, search]);
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm">
-      <div className="mb-6">
-        <span className="inline-block px-5 py-2 rounded-full bg-gray-200 text-gray-800 font-medium text-sm">
-          My task list
-        </span>
+    <motion.div
+      initial={{ opacity: 0, y: 10 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2, ease: "easeOut" }}
+      className="space-y-4"
+    >
+      <CreateIssueModal
+        open={createModalOpen}
+        onOpenChange={(open) => {
+          if (!open) handleCreateModalOpenChange(false);
+        }}
+        initialProjectId={projectIdFromUrl}
+        onCreated={() => void refreshRows()}
+      />
+
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-bold tracking-tight text-foreground flex items-center gap-2">
+            <Inbox className="w-6 h-6 text-primary" />
+            Issue của tôi
+          </h1>
+          <p className="text-sm text-muted-foreground mt-1">
+            Danh sách các công việc được gán cho bạn trên tất cả project.
+          </p>
+        </div>
+        <Button type="button" className="gap-2 shadow-sm" onClick={() => setCreateOpenExtra(true)}>
+          <Plus className="w-4 h-4" />
+          Tạo issue
+        </Button>
       </div>
 
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
-        <div className="flex-1 relative">
-          <input
-            type="text"
-            placeholder="Tìm kiếm..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full h-11 pl-4 pr-12 rounded-xl border border-gray-200 bg-gray-50 text-gray-900 placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-gray-300 focus:border-transparent"
-          />
-          <button
-            type="button"
-            className="absolute right-1 top-1/2 -translate-y-1/2 w-9 h-9 rounded-full bg-gray-300 flex items-center justify-center text-gray-600 hover:bg-gray-400 transition-colors"
-            aria-label="Search"
-          >
-            <SearchIcon className="w-4 h-4" />
-          </button>
-        </div>
-        <div className="flex flex-col gap-1 sm:flex-row sm:items-center">
-          <span className="text-sm text-gray-500 sm:mr-2">Bộ lọc:</span>
-          <div className="flex gap-2 flex-wrap">
-            {(["All", "To do", "Done"] as const).map((f) => (
+      <Card className="border-border/60 shadow-sm overflow-hidden">
+        <div className="p-4 border-b border-border/40 bg-muted/20 flex flex-col sm:flex-row gap-4 justify-between items-start sm:items-center">
+          <div className="relative w-full sm:max-w-xs">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+            <Input
+              type="text"
+              placeholder="Tìm kiếm issue..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="pl-9 h-9 bg-background border-border/60 focus-visible:ring-primary/20"
+            />
+          </div>
+          <div className="flex bg-muted/50 p-1 rounded-lg border border-border/40">
+            {(["All", "Open", "Done"] as const).map((f) => (
               <button
                 key={f}
                 type="button"
                 onClick={() => setFilter(f)}
-                className={`px-4 py-2 rounded-full text-sm font-medium transition-colors ${
-                  filter === f ? "bg-gray-700 text-white" : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                className={`px-3 py-1.5 text-xs font-medium rounded-md transition-all ${
+                  filter === f
+                    ? "bg-background text-foreground shadow-sm"
+                    : "text-muted-foreground hover:text-foreground hover:bg-background/50"
                 }`}
               >
-                {f}
+                {f === "All" ? "Tất cả" : f === "Open" ? "Đang mở" : "Hoàn thành"}
               </button>
             ))}
           </div>
         </div>
-      </div>
 
-      <div className="flex items-center gap-2 mb-4">
-        <button
-          type="button"
-          className="w-10 h-10 rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-500 hover:border-gray-400 hover:text-gray-600 transition-colors"
-          aria-label="Thêm task"
-        >
-          <PlusIcon className="w-5 h-5" />
-        </button>
-        <span className="text-sm text-gray-500">Thêm task mới</span>
-      </div>
+        {error && (
+          <div className="p-4">
+            <p className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg px-3 py-2">
+              {error}
+            </p>
+          </div>
+        )}
 
-      <div className="overflow-x-auto rounded-xl border border-gray-200">
-        <table className="w-full min-w-[600px]">
-          <thead>
-            <tr className="bg-gray-100/80 text-left text-sm font-semibold text-gray-700">
-              <th className="px-4 py-3 rounded-tl-xl">Task Name</th>
-              <th className="px-4 py-3">Project</th>
-              <th className="px-4 py-3">Priority</th>
-              <th className="px-4 py-3">Deadline</th>
-              <th className="px-4 py-3 rounded-tr-xl">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {mockTasks.map((task, i) => (
-              <motion.tr
-                key={task.id}
-                className="border-t border-gray-100 bg-gray-50/50 hover:bg-gray-50 transition-colors"
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                transition={{ delay: i * 0.05 }}
-              >
-                <td className="px-4 py-4">
-                  <div>
-                    <p className="font-medium text-gray-900">{task.name}</p>
-                    <p className="text-xs text-gray-500">#{task.id}</p>
-                  </div>
-                </td>
-                <td className="px-4 py-4 text-gray-700">{task.project}</td>
-                <td className="px-4 py-4">
-                  <span className="inline-block px-3 py-1 rounded-full bg-gray-200 text-gray-700 text-sm">
-                    {task.priority}
-                  </span>
-                </td>
-                <td className="px-4 py-4 text-gray-700">{task.deadline}</td>
-                <td className="px-4 py-4">
-                  <span className="inline-block px-3 py-1 rounded-full bg-gray-200 text-gray-700 text-sm">
-                    {task.status}
-                  </span>
-                </td>
-              </motion.tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
-    </div>
+        {loading ? (
+          <div className="p-12 text-center">
+            <div className="inline-block h-6 w-6 animate-spin rounded-full border-2 border-primary border-r-transparent align-[-0.125em] motion-reduce:animate-[spin_1.5s_linear_infinite]" />
+            <p className="mt-2 text-sm text-muted-foreground">Đang tải dữ liệu...</p>
+          </div>
+        ) : (
+          <div className="overflow-x-auto">
+            <table className="w-full text-sm text-left">
+              <thead className="bg-muted/30 text-muted-foreground text-xs uppercase tracking-wider border-b border-border/40">
+                <tr>
+                  <th className="px-4 py-3 font-medium">Issue</th>
+                  <th className="px-4 py-3 font-medium">Project</th>
+                  <th className="px-4 py-3 font-medium">Trạng thái</th>
+                  <th className="px-4 py-3 font-medium">Loại / Ưu tiên</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-border/40">
+                {filtered.map((task, i) => (
+                  <motion.tr
+                    key={`${task.projectId}-${task.issueKey}`}
+                    initial={{ opacity: 0, y: 5 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    transition={{ delay: Math.min(i * 0.03, 0.2) }}
+                    className="group hover:bg-muted/20 transition-colors"
+                  >
+                    <td className="px-4 py-3">
+                      <Link
+                        href={`/dashboard/projects/${task.projectId}/issues/${encodeURIComponent(task.issueKey)}`}
+                        className="block"
+                      >
+                        <div className="font-medium text-foreground group-hover:text-primary transition-colors line-clamp-1">
+                          {task.title}
+                        </div>
+                        <div className="text-xs text-muted-foreground mt-0.5 font-mono">{task.issueKey}</div>
+                      </Link>
+                    </td>
+                    <td className="px-4 py-3">
+                      <span className="text-muted-foreground">{task.projectName}</span>
+                    </td>
+                    <td className="px-4 py-3">
+                      <Badge
+                        variant={isDone(task.status) ? "secondary" : "default"}
+                        className={`font-normal ${!isDone(task.status) ? "bg-primary/10 text-primary hover:bg-primary/20" : "bg-muted text-muted-foreground"}`}
+                      >
+                        {isDone(task.status) ? (
+                          <CheckCircle2 className="w-3 h-3 mr-1" />
+                        ) : (
+                          <CircleDashed className="w-3 h-3 mr-1" />
+                        )}
+                        {task.status}
+                      </Badge>
+                    </td>
+                    <td className="px-4 py-3">
+                      <div className="flex items-center gap-2">
+                        <Badge
+                          variant="outline"
+                          className="text-[10px] uppercase tracking-wider border-border/60 text-muted-foreground"
+                        >
+                          {task.type}
+                        </Badge>
+                        <span className="text-xs text-muted-foreground capitalize">{task.priority.toLowerCase()}</span>
+                      </div>
+                    </td>
+                  </motion.tr>
+                ))}
+                {filtered.length === 0 && !error && (
+                  <tr>
+                    <td colSpan={4} className="px-4 py-12 text-center text-muted-foreground">
+                      <Inbox className="w-8 h-8 mx-auto mb-3 text-muted-foreground/50" />
+                      <p>Không tìm thấy issue nào.</p>
+                    </td>
+                  </tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        )}
+      </Card>
+    </motion.div>
   );
 }
 
-function SearchIcon({ className }: { className?: string }) {
+export default function MyTasksListPage() {
   return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
-    </svg>
-  );
-}
-
-function PlusIcon({ className }: { className?: string }) {
-  return (
-    <svg className={className} fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor">
-      <path strokeLinecap="round" strokeLinejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
-    </svg>
+    <Suspense
+      fallback={
+        <Card>
+          <CardContent className="py-10 text-center text-sm text-muted-foreground">Đang tải…</CardContent>
+        </Card>
+      }
+    >
+      <MyTasksListPageInner />
+    </Suspense>
   );
 }

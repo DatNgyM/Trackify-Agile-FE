@@ -1,8 +1,14 @@
-export default function CreateNewTaskPage() {
-  return (
-    <div className="bg-background rounded-2xl p-6 shadow-md">
-      <h1 className="text-xl font-semibold text-foreground mb-4">Create New Tasks</h1>
-      <p className="text-muted-foreground text-sm">Form tạo task mới — nội dung sẽ bổ sung.</p>
-    </div>
-  );
+import { redirect } from "next/navigation";
+
+type PageProps = {
+  searchParams: Record<string, string | string[] | undefined>;
+};
+
+export default function CreateIssueRedirectPage({ searchParams }: PageProps) {
+  const raw = searchParams.projectId;
+  const projectId = typeof raw === "string" ? raw : Array.isArray(raw) ? raw[0] : "";
+  const q = new URLSearchParams();
+  q.set("create", "1");
+  if (projectId) q.set("projectId", projectId);
+  redirect(`/dashboard/tasks?${q.toString()}`);
 }
