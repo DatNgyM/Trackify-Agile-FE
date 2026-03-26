@@ -91,7 +91,7 @@ export default function RegisterPage() {
                 id="register-fullName"
                 type="text"
                 placeholder="Họ và tên"
-                className={cn("h-12 rounded-xl bg-[#f0f4f8] border-0", errors.fullName && "ring-2 ring-destructive/50")}
+                className={cn("h-12 rounded-xl bg-muted border-0", errors.fullName && "ring-2 ring-destructive/50")}
                 aria-invalid={!!errors.fullName}
                 {...register("fullName")}
               />
@@ -105,7 +105,7 @@ export default function RegisterPage() {
                 id="register-email"
                 type="email"
                 placeholder="admin@root.vn"
-                className={cn("h-12 rounded-xl bg-[#f0f4f8] border-0", errors.email && "ring-2 ring-destructive/50")}
+                className={cn("h-12 rounded-xl bg-muted border-0", errors.email && "ring-2 ring-destructive/50")}
                 aria-invalid={!!errors.email}
                 {...register("email")}
               />
@@ -119,7 +119,7 @@ export default function RegisterPage() {
                 id="register-password"
                 type="password"
                 placeholder="••••••••"
-                className={cn("h-12 rounded-xl bg-[#f0f4f8] border-0", errors.password && "ring-2 ring-destructive/50")}
+                className={cn("h-12 rounded-xl bg-muted border-0", errors.password && "ring-2 ring-destructive/50")}
                 aria-invalid={!!errors.password}
                 {...register("password")}
               />
@@ -133,7 +133,7 @@ export default function RegisterPage() {
                 id="register-confirmPassword"
                 type="password"
                 placeholder="Xác nhận mật khẩu"
-                className={cn("h-12 rounded-xl bg-[#f0f4f8] border-0", errors.confirmPassword && "ring-2 ring-destructive/50")}
+                className={cn("h-12 rounded-xl bg-muted border-0", errors.confirmPassword && "ring-2 ring-destructive/50")}
                 aria-invalid={!!errors.confirmPassword}
                 {...register("confirmPassword")}
               />

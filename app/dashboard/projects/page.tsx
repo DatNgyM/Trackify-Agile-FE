@@ -2,19 +2,60 @@
 
 import * as React from "react";
 import Link from "next/link";
+import { useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 import { motion } from "framer-motion";
+import { ArrowRight, FolderKanban, Plus } from "lucide-react";
+import { CreateProjectModal } from "@/components/projects/CreateProjectModal";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { getApiErrorMessage } from "@/lib/api";
 import { fetchProjectsPage } from "@/lib/projects-issues-api";
 import type { ProjectSummary } from "@/lib/types/issues";
 import { isNestBackendConfigured } from "@/lib/aggregate-my-dashboard";
 
-export default function ProjectsPage() {
+const BOARD_BACKGROUNDS = [
+  "from-zinc-900 via-zinc-900 to-black",
+  "from-neutral-900 via-neutral-900 to-black",
+  "from-stone-900 via-zinc-900 to-black",
+  "from-zinc-800 via-zinc-900 to-black",
+  "from-neutral-800 via-neutral-900 to-black",
+  "from-black via-zinc-900 to-zinc-950",
+];
+
+function ProjectsPageInner() {
+  const router = useRouter();
+  const searchParams = useSearchParams();
+  const createFromUrl = searchParams.get("create") === "1";
+  const [createOpenExtra, setCreateOpenExtra] = React.useState(false);
+  const createModalOpen = createFromUrl || createOpenExtra;
+
+  const handleCreateModalOpenChange = React.useCallback(
+    (open: boolean) => {
+      if (!open) {
+        setCreateOpenExtra(false);
+        if (searchParams.get("create") === "1") {
+          router.replace("/dashboard/projects", { scroll: false });
+        }
+      }
+    },
+    [router, searchParams],
+  );
+
   const [projects, setProjects] = React.useState<ProjectSummary[]>([]);
   const [loading, setLoading] = React.useState(true);
   const [error, setError] = React.useState<string | null>(null);
+
+  const reloadProjects = React.useCallback(async () => {
+    if (!isNestBackendConfigured()) return;
+    try {
+      const paginated = await fetchProjectsPage(1, 100);
+      setProjects(paginated.data);
+    } catch {
+      /* ignore */
+    }
+  }, []);
 
   React.useEffect(() => {
     if (!isNestBackendConfigured()) {
@@ -41,73 +82,114 @@ export default function ProjectsPage() {
   }, []);
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 10 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.2, ease: "easeOut" }}
-    >
-      <Card>
-        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+    <>
+      {/* Dialog portal tách khỏi motion để tránh lỗi DOM insertBefore (React + Framer Motion). */}
+      <CreateProjectModal
+        open={createModalOpen}
+        onOpenChange={(open) => {
+          if (!open) handleCreateModalOpenChange(false);
+        }}
+        onCreated={() => void reloadProjects()}
+      />
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.2, ease: "easeOut" }}
+        className="space-y-5"
+      >
+      <Card className="border-border/60 bg-gradient-to-r from-card via-card to-muted/30">
+        <CardHeader className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="space-y-1">
-            <CardTitle>Danh sách project</CardTitle>
-            <CardDescription>
-              Mỗi project có key (vd. TRK) để tạo issue key (TRK-1, TRK-2). Board Kanban theo từng project.
-            </CardDescription>
-          </div>
-          <Link href="/dashboard/projects/new">
-            <Button>+ Tạo project</Button>
-          </Link>
-        </CardHeader>
-        <CardContent>
-          {error && (
-            <p className="text-sm text-destructive bg-destructive/10 border border-destructive/20 rounded-lg px-3 py-2 mb-4 mt-4">
-              {error}
-            </p>
-          )}
-
-          {loading ? (
-            <div className="py-8 text-center text-sm text-muted-foreground">Đang tải…</div>
-          ) : projects.length === 0 && !error ? (
-            <div className="py-8 text-center text-sm text-muted-foreground">Chưa có project. Tạo project mới để bắt đầu.</div>
-          ) : (
-            <div className="grid gap-4 mt-4 md:grid-cols-2 lg:grid-cols-3">
-              {projects.map((project) => (
-                <Card key={project.id} className="flex flex-col">
-                  <CardHeader className="pb-3">
-                    <div className="flex items-center justify-between">
-                      <CardTitle className="text-lg truncate">{project.name}</CardTitle>
-                      <Badge variant="secondary" className="font-mono">{project.key}</Badge>
-                    </div>
-                    {project.description && (
-                      <CardDescription className="line-clamp-2 mt-1">
-                        {project.description}
-                      </CardDescription>
-                    )}
-                  </CardHeader>
-                  <CardContent className="mt-auto pt-0 pb-4">
-                    <div className="flex flex-wrap gap-2">
-                      <Link href={`/dashboard/projects/${project.id}/board`} className="flex-1">
-                        <Button variant="default" size="sm" className="w-full">Board</Button>
-                      </Link>
-                      <Link href={`/dashboard/projects/${project.id}/issues`} className="flex-1">
-                        <Button variant="outline" size="sm" className="w-full">Issues</Button>
-                      </Link>
-                      <Link href={`/dashboard/projects/${project.id}/settings`}>
-                        <Button variant="ghost" size="sm" className="px-2" title="Cài đặt">
-                          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor">
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M9.594 3.94c.09-.542.56-.94 1.11-.94h2.593c.55 0 1.02.398 1.11.94l.213 1.281c.063.374.313.686.645.87.074.04.147.083.22.127.324.196.72.257 1.075.124l1.217-.456a1.125 1.125 0 011.37.49l1.296 2.247a1.125 1.125 0 01-.26 1.431l-1.003.827c-.293.24-.438.613-.431.992a6.759 6.759 0 010 .255c-.007.378.138.75.43.99l1.005.828c.424.35.534.954.26 1.43l-1.298 2.247a1.125 1.125 0 01-1.369.491l-1.217-.456c-.355-.133-.75-.072-1.076.124a6.57 6.57 0 01-.22.128c-.331.183-.581.495-.644.869l-.213 1.28c-.09.543-.56.941-1.11.941h-2.594c-.55 0-1.02-.398-1.11-.94l-.213-1.281c-.062-.374-.312-.686-.644-.87a6.52 6.52 0 01-.22-.127c-.325-.196-.72-.257-1.076-.124l-1.217.456a1.125 1.125 0 01-1.369-.49l-1.297-2.247a1.125 1.125 0 01.26-1.431l1.004-.827c.292-.24.437-.613.43-.992a6.932 6.932 0 010-.255c.007-.378-.138-.75-.43-.99l-1.004-.828a1.125 1.125 0 01-.26-1.43l1.297-2.247a1.125 1.125 0 011.37-.491l1.216.456c.356.133.751.072 1.076-.124.072-.044.146-.087.22-.128.332-.183.582-.495.644-.869l.214-1.281z" />
-                            <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
-                          </svg>
-                        </Button>
-                      </Link>
-                    </div>
-                  </CardContent>
-                </Card>
-              ))}
+            <div className="inline-flex items-center gap-2 rounded-full border border-border/60 bg-background/80 px-2.5 py-1 text-xs text-muted-foreground">
+              <FolderKanban className="h-3.5 w-3.5" />
+              Workspace Projects
             </div>
-          )}
-        </CardContent>
+            <CardTitle className="text-2xl">Danh sách project</CardTitle>
+          </div>
+          <Button type="button" className="gap-2" onClick={() => setCreateOpenExtra(true)}>
+            <Plus className="h-4 w-4" />
+            Tạo project
+          </Button>
+        </CardHeader>
       </Card>
-    </motion.div>
+
+      {error && (
+        <p className="rounded-lg border border-destructive/20 bg-destructive/10 px-3 py-2 text-sm text-destructive">
+          {error}
+        </p>
+      )}
+
+      {loading ? (
+        <Card>
+          <CardContent className="py-10 text-center text-sm text-muted-foreground">Đang tải danh sách project...</CardContent>
+        </Card>
+      ) : projects.length === 0 && !error ? (
+        <Card>
+          <CardContent className="flex flex-col items-center gap-4 py-10 text-center text-sm text-muted-foreground">
+            <p>Chưa có project. Tạo project mới để bắt đầu.</p>
+            <Button type="button" className="gap-2" onClick={() => setCreateOpenExtra(true)}>
+              <Plus className="h-4 w-4" />
+              Tạo project
+            </Button>
+          </CardContent>
+        </Card>
+      ) : (
+        <div className="space-y-4">
+          <div className="flex items-center justify-between">
+            <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">Your boards</h2>
+            <span className="text-xs text-muted-foreground">{projects.length} projects</span>
+          </div>
+
+          <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+            {projects.map((project, index) => (
+              <div key={project.id} className="group relative">
+                <Link href={`/dashboard/projects/${project.id}/board`} className="block">
+                  <div
+                    className={`relative aspect-video overflow-hidden rounded-xl bg-gradient-to-br ${BOARD_BACKGROUNDS[index % BOARD_BACKGROUNDS.length]} p-4 text-white shadow-sm transition-all duration-200 hover:-translate-y-0.5 hover:shadow-xl`}
+                  >
+                    <div className="absolute inset-0 bg-black/35 transition-colors group-hover:bg-black/45" />
+                    <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.12),transparent_45%)]" />
+
+                    <div className="relative flex h-full flex-col justify-between">
+                      <div className="flex items-start justify-between gap-2">
+                        <h3 className="line-clamp-2 text-lg font-semibold drop-shadow-sm">{project.name}</h3>
+                        <Badge variant="secondary" className="border-white/40 bg-white/20 font-mono text-white">
+                          {project.key}
+                        </Badge>
+                      </div>
+
+                      <div className="space-y-2">
+                        <p className="line-clamp-2 text-xs text-white/90">
+                          {project.description ?? "Chưa có mô tả cho project này."}
+                        </p>
+                        <div className="inline-flex items-center gap-1 text-xs font-medium text-white/95">
+                          Open board
+                          <ArrowRight className="h-3.5 w-3.5" />
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      </motion.div>
+    </>
+  );
+}
+
+export default function ProjectsPage() {
+  return (
+    <Suspense
+      fallback={
+        <Card>
+          <CardContent className="py-10 text-center text-sm text-muted-foreground">Đang tải…</CardContent>
+        </Card>
+      }
+    >
+      <ProjectsPageInner />
+    </Suspense>
   );
 }

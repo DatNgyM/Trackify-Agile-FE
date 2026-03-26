@@ -4,7 +4,9 @@ import * as React from "react";
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { motion } from "framer-motion";
+import { ProjectSettingsPanel } from "@/components/projects/ProjectSettingsPanel";
 import { Button, Card } from "@/components/ui";
+import { Dropdown } from "@/components/ui/Dropdown";
 import { getApiErrorMessage } from "@/lib/api";
 import { fetchBacklog, fetchProject } from "@/lib/projects-issues-api";
 import { isNestBackendConfigured } from "@/lib/aggregate-my-dashboard";
@@ -81,11 +83,27 @@ export default function ProjectBacklogPage() {
               Tìm issue
             </Button>
           </Link>
-          <Link href={`/dashboard/projects/${projectId}/settings`}>
-            <Button size="sm" variant="outline">
-              Cài đặt
-            </Button>
-          </Link>
+          <Dropdown
+            align="right"
+            contentClassName="w-[min(36rem,calc(100vw-1.25rem))] max-h-[min(90vh,36rem)] overflow-hidden p-0"
+            trigger={
+              <Button size="sm" variant="outline" type="button">
+                Cài đặt
+              </Button>
+            }
+          >
+            <div className="flex max-h-[min(90vh,36rem)] flex-col p-4 text-left">
+              <p className="text-sm font-semibold text-foreground">Cài đặt project</p>
+              {projectName ? <p className="mt-0.5 text-xs text-muted-foreground">{projectName}</p> : null}
+              <div className="mt-2 min-h-0 flex-1 overflow-hidden">
+                <ProjectSettingsPanel
+                  projectId={projectId}
+                  variant="embed"
+                  onDataChanged={() => void load()}
+                />
+              </div>
+            </div>
+          </Dropdown>
         </div>
       </div>
 

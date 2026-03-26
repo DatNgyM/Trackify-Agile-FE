@@ -6,24 +6,8 @@ import { Header, Sidebar } from "@/components/layout";
 
 const navItems = [
   { href: "/dashboard", label: "Home", icon: HomeIcon },
-  {
-    href: "/dashboard/projects",
-    label: "Projects",
-    icon: ProjectIcon,
-    children: [
-      { href: "/dashboard/projects", label: "Danh sách project" },
-      { href: "/dashboard/projects/new", label: "Tạo project" },
-    ],
-  },
-  {
-    href: "/dashboard/tasks",
-    label: "Issues",
-    icon: TaskIcon,
-    children: [
-      { href: "/dashboard/tasks", label: "Được gán cho tôi" },
-      { href: "/dashboard/tasks/new", label: "Tạo issue" },
-    ],
-  },
+  { href: "/dashboard/projects", label: "Projects", icon: ProjectIcon },
+  { href: "/dashboard/tasks", label: "Issues", icon: TaskIcon },
   { href: "/dashboard/notifications", label: "Notifications", icon: BellIcon },
   { href: "/dashboard/profile", label: "Profile", icon: UserIcon },
 ];
@@ -50,17 +34,17 @@ export default function DashboardLayout({
   };
 
   return (
-    <div className="h-screen flex overflow-hidden bg-background-subtle">
+    <div className="flex h-screen w-full min-w-0 overflow-x-hidden overflow-y-hidden bg-background-subtle">
       <Sidebar items={navItems} />
-      <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
+      <div className="flex min-h-0 min-w-0 flex-1 flex-col overflow-hidden bg-background-subtle">
         <Header title={getPageTitle()} />
-        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 relative">
+        <main className="relative min-h-0 w-full flex-1 overflow-x-hidden overflow-y-auto bg-background-subtle p-4 md:p-6 lg:p-8">
           <motion.div
             key={pathname}
             initial={{ opacity: 0, y: 8 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.2, ease: "easeOut" }}
-            className="max-w-7xl mx-auto h-auto min-h-full"
+            className="h-auto min-h-full w-full"
           >
             {children}
           </motion.div>

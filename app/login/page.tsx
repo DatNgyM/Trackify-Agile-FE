@@ -90,7 +90,7 @@ export default function LoginPage() {
                 id="login-email"
                 type="email"
                 placeholder="admin@root.vn"
-                className={cn("h-12 rounded-xl bg-[#f0f4f8] border-0", errors.email && "ring-2 ring-destructive/50")}
+                className={cn("h-12 rounded-xl bg-muted border-0", errors.email && "ring-2 ring-destructive/50")}
                 aria-invalid={!!errors.email}
                 {...register("email")}
               />
@@ -104,7 +104,7 @@ export default function LoginPage() {
                 id="login-password"
                 type="password"
                 placeholder="••••••••"
-                className={cn("h-12 rounded-xl bg-[#f0f4f8] border-0", errors.password && "ring-2 ring-destructive/50")}
+                className={cn("h-12 rounded-xl bg-muted border-0", errors.password && "ring-2 ring-destructive/50")}
                 aria-invalid={!!errors.password}
                 {...register("password")}
               />

@@ -27,7 +27,7 @@ export function Sidebar({ items }: SidebarProps) {
           <div className="w-8 h-8 rounded-lg bg-primary flex items-center justify-center">
             <span className="text-primary-foreground font-bold text-lg leading-none">T</span>
           </div>
-          <span className="text-xl font-bold text-white tracking-tight">Trackify</span>
+          <span className="text-xl font-bold tracking-tight text-sidebar-foreground">Trackify</span>
         </Link>
       </div>
       
@@ -36,9 +36,9 @@ export function Sidebar({ items }: SidebarProps) {
       </ScrollArea>
 
       <div className="p-4 mt-auto">
-        <Button 
-          variant="ghost" 
-          className="w-full justify-start text-white/70 hover:bg-white/10 hover:text-white"
+        <Button
+          variant="ghost"
+          className="w-full justify-start text-sidebar-foreground/75 hover:bg-sidebar-accent hover:text-sidebar-foreground"
           onClick={() => void handleLogout()}
         >
           <LogoutIcon className="w-5 h-5 mr-3 shrink-0" />
